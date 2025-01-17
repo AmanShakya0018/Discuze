@@ -1,26 +1,46 @@
-import prisma from "@/lib/db"
-import { formatDistanceToNow } from "date-fns"
-import Image from "next/image"
+"use client";
 
-async function getPosts() {
-  try {
-    const posts = await prisma.post.findMany({
-      include: {
-        user: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })
-    return posts
-  } catch (error) {
-    console.error("Error while fetching data: ", error)
-    return []
-  }
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
+
+interface Post {
+  id: string;
+  content: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+  createdAt: string;
 }
 
-export default async function AllPosts() {
-  const posts = await getPosts()
+const AllPosts = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/allposts`
+        );
+        setPosts(response.data);
+      } catch (error) {
+        setError("Something went wrong, please try again.");
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (loading) return <p className="text-center">Loading posts...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen text-neutral-800 dark:text-neutral-100">
@@ -62,6 +82,7 @@ export default async function AllPosts() {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
+export default AllPosts;
