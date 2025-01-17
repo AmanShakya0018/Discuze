@@ -23,11 +23,20 @@ model User {
 }
 
 model Post {
+  id        String    @id @default(uuid())
+  content   String
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  comment   Comment[]
+}
+
+model Comment {
   id        String   @id @default(uuid())
+  post      Post     @relation(fields: [post_id], references: [id])
+  post_id   String
   content   String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
 }
 
 enum Provider {
