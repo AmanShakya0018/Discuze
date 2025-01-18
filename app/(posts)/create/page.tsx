@@ -55,20 +55,30 @@ const Create = () => {
     return null;
   }
 
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    if (value.length <= 799) {
+      setContent(value);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-8">
       <h1 className="text-2xl mb-4">Add New Post</h1>
       <textarea
-        placeholder="Content"
+        placeholder="Content (max 799 characters)"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={handleContentChange}
         className="border rounded-md p-2 mb-2 w-full max-w-md h-32"
       ></textarea>
+      <p className="text-sm text-gray-500 mb-2">
+        {content.length}/799 characters
+      </p>
       <button
         onClick={handleSubmit}
         className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center justify-center ${loading ? "cursor-not-allowed opacity-50" : ""
           }`}
-        disabled={loading} // Disable button when loading
+        disabled={loading}
       >
         {loading ? (
           <div role="status" className="flex items-center">

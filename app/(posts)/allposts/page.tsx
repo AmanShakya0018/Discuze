@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import PostSkeleton from "./loading";
 
 interface Post {
   id: string;
@@ -39,7 +40,7 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
-  if (loading) return <p className="text-center">Loading posts...</p>;
+  if (loading) return <div className="text-center"><PostSkeleton count={5} /></div>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -86,3 +87,8 @@ const AllPosts = () => {
 };
 
 export default AllPosts;
+
+
+
+
+
