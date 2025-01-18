@@ -8,10 +8,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Loader2, Trash } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import PostSkeleton from "./loading";
 
 interface Post {
   id: string;
   content: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+  createdAt: string;
 }
 
 interface EditFormData {
@@ -110,89 +118,97 @@ const Myposts = () => {
     return <p>You must be logged in to view your posts.</p>;
   }
 
-  if (loading) return <p className="text-white pt-20">Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <div className="text-center"><PostSkeleton count={5} /></div>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="container mx-auto px-4 py-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="min-h-screen text-neutral-800 dark:text-neutral-100">
+      <div className="max-w-2xl mx-auto mt-8">
         {posts.length === 0 ? (
-          <p className="text-xl font-bold text-black dark:text-white col-span-full">
-            No posts available.
-          </p>
+          <p className="text-center text-neutral-500">No posts available.</p>
         ) : (
-          posts.map((post) => (
-            <div
-              key={post.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all hover:shadow-lg"
-            >
-              <p className="text-gray-600 dark:text-gray-300 mb-4">{post.content}</p>
-              <div className="flex space-x-2">
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(post)}
-                      className="flex items-center"
-                    >
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit Post</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Textarea
-                          placeholder="Content"
-                          value={formData.content}
-                          onChange={(e) =>
-                            setFormData((prev) => ({ ...prev, content: e.target.value }))
-                          }
-                        />
-                      </div>
+          <div className="flex flex-col bg-zinc-50 dark:bg-zinc-900/40 py-2 rounded-t-3xl border">
+            {posts.map((post) => (
+              <div key={post.id} className="py-4 px-6 border-b">
+                <div className="flex gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-neutral-500 truncate">
+                        {formatDistanceToNow(new Date(post.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
                     </div>
-                    <div className="flex justify-end">
+                    <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap">
+                      {post.content}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex space-x-2 mt-2">
+                  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogTrigger asChild>
                       <Button
-                        onClick={handleUpdate}
-                        disabled={isUpdating}
-                        className="w-full sm:w-auto"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(post)}
+                        className="flex items-center"
                       >
-                        {isUpdating ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Updating...
-                          </>
-                        ) : (
-                          "Update Post"
-                        )}
+                        <Pencil className="h-4 w-4 mr-1" />
                       </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Post</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Textarea
+                            placeholder="Content"
+                            value={formData.content}
+                            onChange={(e) =>
+                              setFormData((prev) => ({ ...prev, content: e.target.value }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={handleUpdate}
+                          disabled={isUpdating}
+                          className="w-full sm:w-auto"
+                        >
+                          {isUpdating ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Updating...
+                            </>
+                          ) : (
+                            "Update Post"
+                          )}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
 
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(post.id)}
-                  disabled={deletingPostId === post.id}
-                  className="flex items-center"
-                >
-                  {deletingPostId === post.id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Trash className="h-4 w-4 mr-1" />
-                      Delete
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(post.id)}
+                    disabled={deletingPostId === post.id}
+                    className="flex items-center"
+                  >
+                    {deletingPostId === post.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Trash className="h-4 w-4 mr-1" />
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
