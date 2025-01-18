@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Loader2, Trash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Post {
   id: string;
@@ -115,7 +116,11 @@ const Myposts = () => {
   };
 
   if (!session) {
-    return <p>You must be logged in to view your posts.</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="medium" />
+      </div>
+    )
   }
 
   if (loading) return <div className="text-center"><PostSkeleton count={5} /></div>;

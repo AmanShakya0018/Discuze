@@ -15,6 +15,9 @@ export async function GET() {
       where: {
         userId: session.user.id,
       },
+      orderBy:{
+        createdAt:"desc"
+      },
     });
 
     if (posts.length === 0) {
