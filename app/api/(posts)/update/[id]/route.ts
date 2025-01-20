@@ -1,8 +1,16 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+const postUpdateSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(799, "Content must not exceed 799 characters"),
+});
 
 interface Params {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export async function PUT(req: NextRequest, { params }: Params) {
@@ -16,9 +24,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
     );
   }
 
-  if (!content) {
+  const validationResult = postUpdateSchema.safeParse({ content });
+
+  if (!validationResult.success) {
     return NextResponse.json(
-      { success: false, message: "No valid fields to update" },
+      { success: false, message: validationResult.error.errors[0].message },
       { status: 400 }
     );
   }
@@ -26,7 +36,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   try {
     const updatedPost = await prisma.post.update({
       where: { id },
-      data: { content },
+      data: { content: validationResult.data.content },
     });
 
     return NextResponse.json(

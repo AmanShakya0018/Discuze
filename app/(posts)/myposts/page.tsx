@@ -39,6 +39,8 @@ const Myposts = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState<EditFormData>({ content: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [charCount, setCharCount] = useState<number>(0);
+  const [isOverLimit, setIsOverLimit] = useState<boolean>(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -84,6 +86,7 @@ const Myposts = () => {
   const handleEdit = (post: Post) => {
     setEditingPost(post);
     setFormData({ content: post.content });
+    setCharCount(post.content.length); // Initialize char count with current post content length
     setDialogOpen(true);
   };
 
@@ -170,16 +173,22 @@ const Myposts = () => {
                           <Textarea
                             placeholder="Content"
                             value={formData.content}
-                            onChange={(e) =>
-                              setFormData((prev) => ({ ...prev, content: e.target.value }))
-                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setFormData((prev) => ({ ...prev, content: value }));
+                              setCharCount(value.length); // Update character count
+                              setIsOverLimit(value.length > 799); // Flag if over the limit
+                            }}
                           />
+                          <div className="text-sm text-neutral-500">
+                            {charCount}/799 characters
+                          </div>
                         </div>
                       </div>
                       <div className="flex justify-end">
                         <Button
                           onClick={handleUpdate}
-                          disabled={isUpdating}
+                          disabled={isUpdating || isOverLimit}
                           className="w-full sm:w-auto"
                         >
                           {isUpdating ? (
@@ -205,9 +214,7 @@ const Myposts = () => {
                     {deletingPostId === post.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <>
-                        <Trash className="h-4 w-4 mr-1" />
-                      </>
+                      <Trash className="h-4 w-4 mr-1" />
                     )}
                   </Button>
                 </div>
