@@ -40,6 +40,15 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
+  const handleShare = (postId: string) => {
+    const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
+    navigator.clipboard.writeText(link).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch((err) => {
+      console.error("Error copying the link: ", err);
+    });
+  };
+
   if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
@@ -76,6 +85,14 @@ const AllPosts = () => {
                       </p>
                     </div>
                   </div>
+                  <div className="mt-2 text-right">
+                    <button
+                      onClick={() => handleShare(post.id)}
+                      className="text-blue-500 hover:text-blue-700 text-sm"
+                    >
+                      Share
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -87,8 +104,3 @@ const AllPosts = () => {
 };
 
 export default AllPosts;
-
-
-
-
-

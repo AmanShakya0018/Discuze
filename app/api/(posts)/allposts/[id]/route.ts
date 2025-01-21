@@ -7,10 +7,10 @@ interface Params {
 
 export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const { id } = await params;
+    const { id } = await params; 
 
     if (!id) {
-      return NextResponse.json({ success: false, message: "ID is missing in the request params" }, { status: 400 });
+      return NextResponse.json({ success: false, message: "Post ID is missing" }, { status: 400 });
     }
 
     const post = await prisma.post.findUnique({

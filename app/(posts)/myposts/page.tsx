@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Loader2, Trash } from "lucide-react";
+import { Pencil, Loader2, Trash, Share2 } from "lucide-react"; // Add Share2 icon
 import { formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
@@ -120,6 +120,15 @@ const Myposts = () => {
     }
   };
 
+  const handleShare = (id: string) => {
+    const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${id}`; // Generate the URL for the post
+    navigator.clipboard.writeText(link).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch((err) => {
+      console.error("Error copying the link: ", err);
+    });
+  };
+
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -163,7 +172,7 @@ const Myposts = () => {
                         onClick={() => handleEdit(post)}
                         className="flex items-center"
                       >
-                        <Pencil className="h-4 w-4 mr-[2px] ml-[2px]" />
+                        <Pencil className="h-4 w-4 mx-[2px]" />
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -225,8 +234,17 @@ const Myposts = () => {
                     {deletingPostId === post.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Trash className="h-4 w-4 mr-[2px] ml-[2px]" />
+                      <Trash className="h-4 w-4 mx-[2px]" />
                     )}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleShare(post.id)}
+                    className="flex items-center"
+                  >
+                    <Share2 className="h-4 w-4 mx-[2px]" />
                   </Button>
                 </div>
               </div>

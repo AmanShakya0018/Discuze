@@ -14,7 +14,7 @@ interface Params {
 }
 
 export async function PUT(req: NextRequest, { params }: Params) {
-  const id = (await params).id;
+  const { id } = await params;
   const { content } = await req.json();
 
   if (!id) {
