@@ -1,14 +1,7 @@
-import { authOptions } from "@/lib/authoptions";
 import prisma from "@/lib/db";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user) {
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const posts = await prisma.post.findMany({

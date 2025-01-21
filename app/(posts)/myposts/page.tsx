@@ -41,6 +41,7 @@ const Myposts = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [charCount, setCharCount] = useState<number>(0);
   const [isOverLimit, setIsOverLimit] = useState<boolean>(false);
+  const [isUnderLimit, setIsUnderLimit] = useState<boolean>(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -86,7 +87,8 @@ const Myposts = () => {
   const handleEdit = (post: Post) => {
     setEditingPost(post);
     setFormData({ content: post.content });
-    setCharCount(post.content.length); // Initialize char count with current post content length
+    setCharCount(post.content.length);
+    setIsUnderLimit(post.content.length < 1);
     setDialogOpen(true);
   };
 
@@ -123,10 +125,10 @@ const Myposts = () => {
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="medium" />
       </div>
-    )
+    );
   }
 
-  if (loading) return <div className="text-center"><PostSkeleton count={5} /></div>;
+  if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -135,9 +137,9 @@ const Myposts = () => {
         {posts.length === 0 ? (
           <p className="text-center text-neutral-500">No posts available.</p>
         ) : (
-          <div className="flex flex-col bg-zinc-50 dark:bg-zinc-900/40 py-2 rounded-t-3xl border">
+          <div className="flex flex-col gap-3 py-2">
             {posts.map((post) => (
-              <div key={post.id} className="py-4 px-6 border-b">
+              <div key={post.id} className="py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border">
                 <div className="flex gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 text-sm">
@@ -161,7 +163,7 @@ const Myposts = () => {
                         onClick={() => handleEdit(post)}
                         className="flex items-center"
                       >
-                        <Pencil className="h-4 w-4 mr-1" />
+                        <Pencil className="h-4 w-4 mr-[2px] ml-[2px]" />
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
@@ -178,17 +180,26 @@ const Myposts = () => {
                               setFormData((prev) => ({ ...prev, content: value }));
                               setCharCount(value.length); // Update character count
                               setIsOverLimit(value.length > 799); // Flag if over the limit
+                              setIsUnderLimit(value.length < 1); // Flag if under the limit
                             }}
                           />
-                          <div className="text-sm text-neutral-500">
-                            {charCount}/799 characters
-                          </div>
+                          {(isUnderLimit || isOverLimit) ? (
+                            <div className="text-sm text-red-500">
+                              {isUnderLimit
+                                ? "Post content must be at least 1 character."
+                                : "Post content cannot exceed 799 characters."}
+                            </div>
+                          ) : (
+                            <div className="text-sm text-neutral-500">
+                              {charCount}/799 characters
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="flex justify-end">
                         <Button
                           onClick={handleUpdate}
-                          disabled={isUpdating || isOverLimit}
+                          disabled={isUpdating || isOverLimit || isUnderLimit}
                           className="w-full sm:w-auto"
                         >
                           {isUpdating ? (
@@ -214,7 +225,7 @@ const Myposts = () => {
                     {deletingPostId === post.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Trash className="h-4 w-4 mr-1" />
+                      <Trash className="h-4 w-4 mr-[2px] ml-[2px]" />
                     )}
                   </Button>
                 </div>

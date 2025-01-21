@@ -40,7 +40,7 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
-  if (loading) return <div className="text-center"><PostSkeleton count={5} /></div>;
+  if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -49,10 +49,10 @@ const AllPosts = () => {
         {posts.length === 0 ? (
           <p className="text-center text-neutral-500">No posts available.</p>
         ) : (
-          <div className="flex flex-col bg-zinc-50 dark:bg-zinc-900/40 mt-8 py-2 rounded-t-3xl border">
+          <div className="flex flex-col gap-3 mt-8 py-2">
             {posts.map((post) => (
               <div key={post.id}>
-                <div className="py-4 px-6 border-b">
+                <div className="py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
                   <div className="flex gap-3">
                     <Image
                       width={48}
