@@ -6,6 +6,11 @@ import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import SinglePostSkeleton from "./loading";
+import { Share2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Post {
   id: string;
@@ -25,6 +30,9 @@ const PostPage = () => {
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -54,6 +62,19 @@ const PostPage = () => {
 
     fetchPost();
   }, [id]);
+
+  const handleShare = (postId: string) => {
+    const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
+    setSelectedPostId(postId);
+    setOpenDialog(true);
+
+    navigator.clipboard.writeText(link).then(() => {
+      setLinkCopied(true);
+    }).catch((err) => {
+      console.error("Error copying the link: ", err);
+    });
+  };
+
 
   if (loading) return <div className="text-center"><SinglePostSkeleton count={5} /></div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -120,12 +141,64 @@ const PostPage = () => {
                       </p>
                     </div>
                   </div>
+                  <div className="mt-2 text-right">
+                    <button
+                      onClick={() => handleShare(userPost.id)}
+                      className="text-zinc-500 hover:text-zinc-600 text-sm"
+                    >
+                      <Share2 className="h-4 w-4 mx-[2px]" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Share Post</DialogTitle>
+            <DialogDescription>
+              Copy the link to share this post with others.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="postLink" className="text-right">
+                Post Link
+              </Label>
+              <Input
+                id="postLink"
+                value={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+                readOnly
+                className="col-span-3"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                if (selectedPostId) {
+                  navigator.clipboard.writeText(
+                    `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
+                  ).then(() => {
+                    setLinkCopied(true);
+                  }).catch((err) => {
+                    console.error("Error copying the link: ", err);
+                  });
+                }
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              {linkCopied ? "Link Copied!" : "Copy Link"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

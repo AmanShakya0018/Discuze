@@ -22,6 +22,7 @@ const PostSkeleton: React.FC<PostSkeletonProps> = ({ count = 3 }) => {
                 <div className="flex items-center gap-2">
                   <div className="h-8 bg-neutral-300 dark:bg-neutral-800 rounded w-10" />
                   <div className="h-8 bg-neutral-300 dark:bg-neutral-800 rounded w-10" />
+                  <div className="h-8 bg-neutral-300 dark:bg-neutral-800 rounded w-10" />
                 </div>
               </div>
             </div>
