@@ -141,7 +141,7 @@ const Myposts = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="min-h-screen text-neutral-800 dark:text-neutral-100">
+    <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
       <div className="max-w-2xl mx-auto mt-8">
         {posts.length === 0 ? (
           <p className="text-center text-neutral-500">No posts available.</p>
