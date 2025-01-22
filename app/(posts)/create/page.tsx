@@ -25,7 +25,7 @@ const Create = () => {
       return;
     }
 
-    setLoading(true); // Start loading spinner
+    setLoading(true);
 
     try {
       const response = await axios.post(

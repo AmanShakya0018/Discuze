@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import Commentskeleton from "@/components/commentsskeleton";
 
 interface Post {
   id: string;
@@ -233,9 +234,9 @@ const Myposts = () => {
                             onChange={(e) => {
                               const value = e.target.value;
                               setFormData((prev) => ({ ...prev, content: value }));
-                              setCharCount(value.length); // Update character count
-                              setIsOverLimit(value.length > 799); // Flag if over the limit
-                              setIsUnderLimit(value.length < 1); // Flag if under the limit
+                              setCharCount(value.length);
+                              setIsOverLimit(value.length > 799);
+                              setIsUnderLimit(value.length < 1);
                             }}
                           />
                           {(isUnderLimit || isOverLimit) ? (
@@ -295,7 +296,7 @@ const Myposts = () => {
                 </div>
                 <div className="mt-4">
                   {commentsLoading[post.id] ? (
-                    <div>Loading comments...</div>
+                    <div><Commentskeleton count={2} /></div>
                   ) : (
                     (post.comments || []).map((comment) => (
                       <div key={comment.id} className="flex gap-3 py-2">
@@ -326,7 +327,7 @@ const Myposts = () => {
                 </div>
                 <button
                   onClick={() => fetchComments(post.id)}
-                  className="text-sm text-zinc-500 mt-2 hover:text-zinc-600"
+                  className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
                 >
                   {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
                 </button>

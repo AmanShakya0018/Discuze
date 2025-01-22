@@ -6,12 +6,15 @@ import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import SinglePostSkeleton from "./loading";
-import { Share2 } from "lucide-react";
+import { Share2, SquareArrowOutUpRight } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CommentForm } from "@/components/commentform";
+import Commentskeleton from "@/components/commentsskeleton";
+import Link from "next/link";
+// import { useSession } from "next-auth/react";
 
 interface Post {
   id: string;
@@ -38,7 +41,7 @@ interface Comment {
 
 const PostPage = () => {
   const { id } = useParams();
-
+  // const { data: session } = useSession();
   const [post, setPost] = useState<Post | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -142,7 +145,7 @@ const PostPage = () => {
             <CommentForm postId={post.id} />
             <div className="mt-4">
               {commentsLoading[post.id] ? (
-                <div>Loading comments...</div>
+                <div><Commentskeleton count={2} /></div>
               ) : (
                 (post.comments || []).map((comment) => (
                   <div key={comment.id} className="flex gap-3 py-2">
@@ -165,6 +168,9 @@ const PostPage = () => {
                       </div>
                       <p className="text-neutral-800 dark:text-neutral-200">
                         {comment.content}
+                        {/* {comment.user.id === session?.user.id && (
+                          <p>true</p>
+                        )} */}
                       </p>
                     </div>
                   </div>
@@ -173,7 +179,7 @@ const PostPage = () => {
             </div>
             <button
               onClick={() => fetchComments(post.id)}
-              className="text-sm text-zinc-500 mt-2 hover:text-zinc-600"
+              className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
             >
               {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
             </button>
@@ -197,14 +203,21 @@ const PostPage = () => {
                       className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="font-bold truncate">{post.user.name || "Unknown User"}</span>
-                        <span className="text-neutral-500">·</span>
-                        <span className="text-neutral-500 truncate">
-                          {formatDistanceToNow(new Date(userPost.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-bold truncate">{post.user.name}</span>
+                          <span className="text-neutral-500">·</span>
+                          <span className="text-neutral-500 truncate">
+                            {formatDistanceToNow(new Date(post.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                        <div className="text-zinc-500 hover:text-zinc-600 text-sm">
+                          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${userPost.id}`} target="_blank">
+                            <SquareArrowOutUpRight className="h-4 w-4 mx-[2px]" />
+                          </Link>
+                        </div>
                       </div>
                       <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap">
                         {userPost.content}
