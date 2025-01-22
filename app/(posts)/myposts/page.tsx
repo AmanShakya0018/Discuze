@@ -76,7 +76,7 @@ const Myposts = () => {
   const handleDelete = async (id: string) => {
     setDeletingPostId(id);
     try {
-      const response = await axios.get(
+      const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/delete/${id}`
       );
       if (response.status === 200) {
@@ -88,6 +88,7 @@ const Myposts = () => {
       setDeletingPostId(null);
     }
   };
+
 
   const handleEdit = (post: Post) => {
     setEditingPost(post);

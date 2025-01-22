@@ -1,3 +1,4 @@
+// In the same directory as your GET route, create a new DELETE handler
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -5,7 +6,7 @@ interface Params {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
 
@@ -13,22 +14,20 @@ export async function GET(req: NextRequest, { params }: Params) {
       return NextResponse.json({ success: false, message: "ID is missing in the request params" }, { status: 400 });
     }
 
-    const post = await prisma.post.findUnique({
+    // Delete the post
+    const deletedPost = await prisma.post.delete({
       where: {
         id: id,
       },
-      include: {
-        user: true,
-      },
     });
 
-    if (!post) {
+    if (!deletedPost) {
       return NextResponse.json({ success: false, message: "Post not found" }, { status: 404 });
     }
 
-    return NextResponse.json(post, { status: 200 });
+    return NextResponse.json({ success: true, message: "Post deleted successfully" }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching post:", error);
+    console.error("Error deleting post:", error);
     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -6,12 +6,32 @@ import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import PostSkeleton from "./loading";
 import { Share2 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CommentForm } from "@/components/commentform";
 
 interface Post {
+  id: string;
+  content: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+  createdAt: string;
+  comments: Comment[];
+}
+
+interface Comment {
   id: string;
   content: string;
   user: {
@@ -25,6 +45,7 @@ interface Post {
 const AllPosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState<string>("");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -33,9 +54,7 @@ const AllPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/allposts`
-        );
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts`);
         setPosts(response.data);
       } catch (error) {
         setError("Something went wrong, please try again.");
@@ -48,16 +67,36 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
+  const fetchComments = async (postId: string) => {
+    setCommentsLoading((prev) => ({ ...prev, [postId]: true }));
+
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${postId}/comments`);
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, comments: response.data } : post
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setCommentsLoading((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
   const handleShare = (postId: string) => {
     const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
     setSelectedPostId(postId);
     setOpenDialog(true);
 
-    navigator.clipboard.writeText(link).then(() => {
-      setLinkCopied(true);
-    }).catch((err) => {
-      console.error("Error copying the link: ", err);
-    });
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        setLinkCopied(true);
+      })
+      .catch((err) => {
+        console.error("Error copying the link: ", err);
+      });
   };
 
   if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
@@ -104,6 +143,44 @@ const AllPosts = () => {
                       <Share2 className="h-4 w-4 mx-[2px]" />
                     </button>
                   </div>
+                  <CommentForm postId={post.id} />
+                  <div className="mt-4">
+                    {commentsLoading[post.id] ? (
+                      <div>Loading comments...</div>
+                    ) : (
+                      (post.comments || []).map((comment) => (
+                        <div key={comment.id} className="flex gap-3 py-2">
+                          <Image
+                            width={32}
+                            height={32}
+                            src={comment.user.image || "/pfp.png"}
+                            alt={comment.user.name}
+                            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="font-bold truncate">{comment.user.name}</span>
+                              <span className="text-neutral-500">·</span>
+                              <span className="text-neutral-500 truncate">
+                                {formatDistanceToNow(new Date(comment.createdAt), {
+                                  addSuffix: true,
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-neutral-800 dark:text-neutral-200">
+                              {comment.content}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <button
+                    onClick={() => fetchComments(post.id)}
+                    className="text-sm text-zinc-500 mt-2 hover:text-zinc-600"
+                  >
+                    {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
+                  </button>
                 </div>
               </div>
             ))}
@@ -138,13 +215,16 @@ const AllPosts = () => {
             <Button
               onClick={() => {
                 if (selectedPostId) {
-                  navigator.clipboard.writeText(
-                    `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
-                  ).then(() => {
-                    setLinkCopied(true);
-                  }).catch((err) => {
-                    console.error("Error copying the link: ", err);
-                  });
+                  navigator.clipboard
+                    .writeText(
+                      `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
+                    )
+                    .then(() => {
+                      setLinkCopied(true);
+                    })
+                    .catch((err) => {
+                      console.error("Error copying the link: ", err);
+                    });
                 }
               }}
               variant="outline"
