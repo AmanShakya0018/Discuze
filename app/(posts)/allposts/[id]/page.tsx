@@ -11,8 +11,21 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CommentForm } from "@/components/commentform";
 
 interface Post {
+  id: string;
+  content: string;
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+  createdAt: string,
+  comments: Comment[];
+}
+
+interface Comment {
   id: string;
   content: string;
   user: {
@@ -33,6 +46,7 @@ const PostPage = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
+  const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (!id) return;
@@ -75,6 +89,24 @@ const PostPage = () => {
     });
   };
 
+  const fetchComments = async (postId: string) => {
+    setCommentsLoading((prev) => ({ ...prev, [postId]: true }));
+
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${postId}/comments`);
+      if (post) {
+        setPost({
+          ...post,
+          comments: response.data,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setCommentsLoading((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
 
   if (loading) return <div className="text-center"><SinglePostSkeleton count={5} /></div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -107,6 +139,44 @@ const PostPage = () => {
                 </p>
               </div>
             </div>
+            <CommentForm postId={post.id} />
+            <div className="mt-4">
+              {commentsLoading[post.id] ? (
+                <div>Loading comments...</div>
+              ) : (
+                (post.comments || []).map((comment) => (
+                  <div key={comment.id} className="flex gap-3 py-2">
+                    <Image
+                      width={32}
+                      height={32}
+                      src={comment.user.image || "/pfp.png"}
+                      alt={comment.user.name}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-bold truncate">{comment.user.name}</span>
+                        <span className="text-neutral-500">·</span>
+                        <span className="text-neutral-500 truncate">
+                          {formatDistanceToNow(new Date(comment.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-neutral-800 dark:text-neutral-200">
+                        {comment.content}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              onClick={() => fetchComments(post.id)}
+              className="text-sm text-zinc-500 mt-2 hover:text-zinc-600"
+            >
+              {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
+            </button>
           </div>
         ) : (
           <p className="text-center text-neutral-500">Post not found.</p>

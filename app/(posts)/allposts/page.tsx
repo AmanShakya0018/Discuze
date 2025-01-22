@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import PostSkeleton from "./loading";
-import { Share2 } from "lucide-react";
+import { Share2, SquareArrowOutUpRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,8 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CommentForm } from "@/components/commentform";
+import { Label } from "@/components/ui/label"; import Link from "next/link";
 
 interface Post {
   id: string;
@@ -45,7 +44,6 @@ interface Comment {
 const AllPosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState<string>("");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -67,22 +65,6 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
-  const fetchComments = async (postId: string) => {
-    setCommentsLoading((prev) => ({ ...prev, [postId]: true }));
-
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${postId}/comments`);
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, comments: response.data } : post
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    } finally {
-      setCommentsLoading((prev) => ({ ...prev, [postId]: false }));
-    }
-  };
 
   const handleShare = (postId: string) => {
     const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
@@ -121,14 +103,21 @@ const AllPosts = () => {
                       className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="font-bold truncate">{post.user.name}</span>
-                        <span className="text-neutral-500">·</span>
-                        <span className="text-neutral-500 truncate">
-                          {formatDistanceToNow(new Date(post.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-bold truncate">{post.user.name}</span>
+                          <span className="text-neutral-500">·</span>
+                          <span className="text-neutral-500 truncate">
+                            {formatDistanceToNow(new Date(post.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                        <div className="text-zinc-500 hover:text-zinc-600 text-sm">
+                          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`} target="_blank">
+                            <SquareArrowOutUpRight className="h-4 w-4 mx-[2px]" />
+                          </Link>
+                        </div>
                       </div>
                       <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap">
                         {post.content}
@@ -143,44 +132,6 @@ const AllPosts = () => {
                       <Share2 className="h-4 w-4 mx-[2px]" />
                     </button>
                   </div>
-                  <CommentForm postId={post.id} />
-                  <div className="mt-4">
-                    {commentsLoading[post.id] ? (
-                      <div>Loading comments...</div>
-                    ) : (
-                      (post.comments || []).map((comment) => (
-                        <div key={comment.id} className="flex gap-3 py-2">
-                          <Image
-                            width={32}
-                            height={32}
-                            src={comment.user.image || "/pfp.png"}
-                            alt={comment.user.name}
-                            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="font-bold truncate">{comment.user.name}</span>
-                              <span className="text-neutral-500">·</span>
-                              <span className="text-neutral-500 truncate">
-                                {formatDistanceToNow(new Date(comment.createdAt), {
-                                  addSuffix: true,
-                                })}
-                              </span>
-                            </div>
-                            <p className="text-neutral-800 dark:text-neutral-200">
-                              {comment.content}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  <button
-                    onClick={() => fetchComments(post.id)}
-                    className="text-sm text-zinc-500 mt-2 hover:text-zinc-600"
-                  >
-                    {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
-                  </button>
                 </div>
               </div>
             ))}
