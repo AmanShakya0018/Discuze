@@ -6,7 +6,7 @@ import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import SinglePostSkeleton from "./loading";
-import { Share2, SquareArrowOutUpRight } from "lucide-react";
+import { Share2, SquareArrowOutUpRight, Trash2, } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-// import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 interface Post {
   id: string;
@@ -47,7 +47,7 @@ interface Comment {
 
 const PostPage = () => {
   const { id } = useParams();
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const [post, setPost] = useState<Post | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -116,6 +116,15 @@ const PostPage = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`)
+      fetchComments(post!.id)
+    } catch (error) {
+      console.error("Error deleting comment:", error)
+    }
+  }
+
 
   if (loading) return <div className="text-center"><SinglePostSkeleton count={5} /></div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -172,11 +181,16 @@ const PostPage = () => {
                           })}
                         </span>
                       </div>
-                      <p className="mt-1 text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+                      <p className="flex items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                         {comment.content}
-                        {/* {comment.user.id === session?.user.id && (
-                          <p>true</p>
-                        )} */}
+                        {comment.user.id === session?.user?.id && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </p>
                     </div>
                   </div>

@@ -106,7 +106,7 @@ const AllPosts = () => {
                       height={48}
                       src={post.user.image || "/pfp.png"}
                       alt={post.user.name}
-                      className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0 overflow-hidden">
                       <div className="flex items-center justify-between">

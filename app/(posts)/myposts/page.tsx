@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight } from "lucide-react";
+import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
@@ -170,6 +170,15 @@ const Myposts = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId: string, postId: string) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`)
+      fetchComments(postId)
+    } catch (error) {
+      console.error("Error deleting comment:", error)
+    }
+  }
+
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -317,8 +326,14 @@ const Myposts = () => {
                               })}
                             </span>
                           </div>
-                          <p className="mt-1 text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+                          <p className="flex items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                             {comment.content}
+                            <button
+                              onClick={() => handleDeleteComment(comment.id, post.id)}
+                              className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </p>
                         </div>
                       </div>

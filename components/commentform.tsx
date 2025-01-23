@@ -51,16 +51,22 @@ export function CommentForm({ postId }: { postId: string }) {
       })
 
       if (response.data.success) {
-        alert("Comment added successfully!")
+        toast({
+          description: "Comment added successfully!"
+        })
         setComment("")
         setIsDialogOpen(false)
         router.refresh()
       } else {
-        alert(response.data.message || "Failed to add comment")
+        toast({
+          description: response.data.message || "Failed to add comment"
+        })
       }
     } catch (error) {
       console.error("Error adding comment:", error)
-      alert("An error occurred while adding the comment.")
+      toast({
+        description: "An error occurred while adding the comment."
+      })
     } finally {
       setSubmittingComment(false)
     }
@@ -69,7 +75,7 @@ export function CommentForm({ postId }: { postId: string }) {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="mt-4">Add Comment</Button>
+        <Button variant="outline" className="mt-4 text-xs h-8 px-2">Add Comment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
