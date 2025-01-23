@@ -175,7 +175,7 @@ const AllPosts = () => {
       </div>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
           <DialogHeader>
             <DialogTitle>Share Post</DialogTitle>
             <DialogDescription>

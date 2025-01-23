@@ -7,11 +7,10 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import SinglePostSkeleton from "./loading";
 import { Share2, SquareArrowOutUpRight, Trash2, } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CommentForm } from "@/components/commentform";
 import Commentskeleton from "@/components/commentsskeleton";
 import Link from "next/link";
 import {
@@ -20,7 +19,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { toast } from "@/hooks/use-toast"
 
 interface Post {
   id: string;
@@ -46,6 +47,7 @@ interface Comment {
 }
 
 const PostPage = () => {
+  const router = useRouter()
   const { id } = useParams();
   const { data: session } = useSession();
   const [post, setPost] = useState<Post | null>(null);
@@ -55,7 +57,12 @@ const PostPage = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
+  const [comment, setComment] = useState("")
+  const [submittingComment, setSubmittingComment] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
+  const [flag, setFlag] = useState(true);
+  const userId = session?.user?.id
 
   useEffect(() => {
     if (!id) return;
@@ -70,7 +77,6 @@ const PostPage = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/api/userposts/${userId}`
         );
 
-        // Filter out the current post from the user posts
         const filteredPosts = userPostsResponse.data.filter(
           (userPost: Post) => userPost.id !== response.data.id
         );
@@ -116,6 +122,61 @@ const PostPage = () => {
     }
   };
 
+  const handleSubmit = async (event: React.FormEvent, postId: string) => {
+    event.preventDefault()
+    if (!comment) {
+      toast({
+        description: "Comment content is required"
+      })
+      return
+    }
+
+    if (comment.length > 499) {
+      toast({
+        description: "Comment must be 499 characters or less",
+      });
+      return;
+    }
+
+
+    if (!userId) {
+      toast({
+        description: "You must be logged in to comment"
+      })
+      return
+    }
+    setSubmittingComment(true)
+
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/comments`, {
+        postId,
+        content: comment,
+        userId,
+      })
+
+      if (response.data.success) {
+        toast({
+          description: "Comment added successfully!"
+        })
+        fetchComments(postId);
+        setComment("")
+        setIsDialogOpen(false)
+        router.refresh()
+      } else {
+        toast({
+          description: response.data.message || "Failed to add comment"
+        })
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error)
+      toast({
+        description: "An error occurred while adding the comment."
+      })
+    } finally {
+      setSubmittingComment(false)
+    }
+  }
+
   const handleDeleteComment = async (commentId: string) => {
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`)
@@ -157,52 +218,101 @@ const PostPage = () => {
                 </p>
               </div>
             </div>
-            <CommentForm postId={post.id} />
+            <div>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="mt-4 text-xs h-8 px-2">Add Comment</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
+                  <DialogHeader>
+                    <DialogTitle>Add a Comment</DialogTitle>
+                    <DialogDescription>Enter your comment below. Click submit when you&apos;re done.</DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={(e) => handleSubmit(e, post!.id)}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="comment" className="text-right">
+                          Comment
+                        </Label>
+                        <Input
+                          id="comment"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          className="col-span-3"
+                          disabled={submittingComment}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit" disabled={submittingComment}>
+                        {submittingComment ? "Submitting..." : "Submit Comment"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
             <div className="mt-4">
               {commentsLoading[post.id] ? (
-                <div><Commentskeleton count={2} /></div>
-              ) : (
-                (post.comments || []).map((comment) => (
-                  <div key={comment.id} className="flex gap-3 py-2">
-                    <Image
-                      width={32}
-                      height={32}
-                      src={comment.user.image || "/pfp.png"}
-                      alt={comment.user.name}
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                        <span className="font-bold truncate">{comment.user.name}</span>
-                        <span className="hidden sm:block text-neutral-500">·</span>
-                        <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
-                          {formatDistanceToNow(new Date(comment.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </span>
+                <div>
+                  <Commentskeleton count={2} />
+                </div>
+              ) :
+                post.comments && post.comments.length > 0 ? (
+                  post.comments.map((comment) => (
+                    <div key={comment.id} className="flex gap-3 py-2">
+                      <Image
+                        width={500}
+                        height={500}
+                        src={comment.user.image || "/pfp.png"}
+                        alt={comment.user.name}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
+                          <span className="font-bold truncate">{comment.user.name}</span>
+                          <span className="hidden sm:block text-neutral-500">·</span>
+                          <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
+                            {formatDistanceToNow(new Date(comment.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                        <p className="flex gap-1 items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+                          {comment.content}
+                          {comment.user.id === session?.user?.id && (
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </p>
                       </div>
-                      <p className="flex items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
-                        {comment.content}
-                        {comment.user.id === session?.user?.id && (
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </p>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                ) : (
+                  !flag ? (
+                    <div className="text-neutral-500 text-sm text-center py-4">
+                      No comments available.
+                    </div>) : (
+                    <span className="hidden"></span>
+                  )
+                )}
             </div>
-            <button
-              onClick={() => fetchComments(post.id)}
-              className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
-            >
-              {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
-            </button>
+
+            {flag && (
+              <button
+                onClick={() => {
+                  fetchComments(post.id);
+                  setFlag(false);
+                }}
+                className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
+              >
+                {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
+              </button>
+            )}
           </div>
         ) : (
           <p className="text-center text-neutral-500">Post not found.</p>
