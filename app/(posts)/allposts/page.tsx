@@ -99,8 +99,8 @@ const AllPosts = () => {
           <div className="flex flex-col gap-3 mt-8 py-2">
             {posts.map((post) => (
               <div key={post.id}>
-                <div className="flex justify-between py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
-                  <div className="flex gap-3">
+                <div className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
+                  <div className="flex gap-3 flex-grow overflow-hidden">
                     <Image
                       width={48}
                       height={48}
@@ -108,28 +108,32 @@ const AllPosts = () => {
                       alt={post.user.name}
                       className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                     />
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
                           <span className="font-bold truncate">{post.user.name}</span>
-                          <span className="text-neutral-500">·</span>
-                          <span className="text-neutral-500 truncate">
+                          <span className="hidden sm:block text-neutral-500">·</span>
+                          <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] sm:text-sm truncate">
                             {formatDistanceToNow(new Date(post.createdAt), {
                               addSuffix: true,
                             })}
                           </span>
                         </div>
                       </div>
-                      <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap">
+                      <p className="mt-1 text-[0.95rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                         {post.content}
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 ml-4 flex-shrink-0">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Link className="text-zinc-500 hover:text-zinc-600 text-sm" href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`} target="_blank">
+                          <Link
+                            className="text-zinc-500 hover:text-zinc-600 text-sm"
+                            href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                            target="_blank"
+                          >
                             <SquareArrowOutUpRight className="h-4 w-4 mx-[2px]" />
                           </Link>
                         </TooltipTrigger>
@@ -139,7 +143,9 @@ const AllPosts = () => {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Link href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`} target="_blank"
+                          <Link
+                            href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                            target="_blank"
                             className="text-zinc-500 hover:text-zinc-600 text-sm"
                           >
                             <MessageSquare className="h-4 w-4 mx-[2px]" />
@@ -151,10 +157,7 @@ const AllPosts = () => {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
-                            onClick={() => handleShare(post.id)}
-                            className="text-zinc-500 hover:text-zinc-600 text-sm"
-                          >
+                          <button onClick={() => handleShare(post.id)} className="text-zinc-500 hover:text-zinc-600 text-sm">
                             <Share2 className="h-4 w-4 mx-[2px]" />
                           </button>
                         </TooltipTrigger>

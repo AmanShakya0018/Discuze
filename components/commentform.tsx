@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "@/hooks/use-toast"
 
 export function CommentForm({ postId }: { postId: string }) {
   const [comment, setComment] = useState("")
@@ -29,11 +30,15 @@ export function CommentForm({ postId }: { postId: string }) {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!comment) {
-      alert("Comment content is required")
+      toast({
+        description: "Comment content is required"
+      })
       return
     }
     if (!userId) {
-      alert("You must be logged in to comment")
+      toast({
+        description: "You must be logged in to comment"
+      })
       return
     }
     setSubmittingComment(true)

@@ -191,7 +191,7 @@ const Myposts = () => {
           <div className="flex flex-col gap-3 py-2">
             {posts.map((post) => (
               <div key={post.id} className="py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border">
-                <div className="flex gap-3">
+                <div className="flex flex-grow overflow-hidden gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="text-neutral-500 truncate text-sm">
@@ -205,7 +205,7 @@ const Myposts = () => {
                         </Link>
                       </div>
                     </div>
-                    <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap">
+                    <p className="mt-1 text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                       {post.content}
                     </p>
                   </div>
@@ -301,23 +301,23 @@ const Myposts = () => {
                     (post.comments || []).map((comment) => (
                       <div key={comment.id} className="flex gap-3 py-2">
                         <Image
-                          width={32}
-                          height={32}
+                          width={200}
+                          height={200}
                           src={comment.user.image || "/pfp.png"}
                           alt={comment.user.name}
                           className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 text-sm">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
                             <span className="font-bold truncate">{comment.user.name}</span>
-                            <span className="text-neutral-500">·</span>
-                            <span className="text-neutral-500 truncate">
+                            <span className="hidden sm:block text-neutral-500">·</span>
+                            <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
                               {formatDistanceToNow(new Date(comment.createdAt), {
                                 addSuffix: true,
                               })}
                             </span>
                           </div>
-                          <p className="text-neutral-800 dark:text-neutral-200">
+                          <p className="mt-1 text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                             {comment.content}
                           </p>
                         </div>
