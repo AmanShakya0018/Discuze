@@ -362,8 +362,8 @@ const Myposts = () => {
                     (post.comments || []).map((comment) => (
                       <div key={comment.id} className="flex gap-3 py-2">
                         <Image
-                          width={200}
-                          height={200}
+                          width={500}
+                          height={500}
                           src={comment.user.image || "/pfp.png"}
                           alt={comment.user.name}
                           className="w-8 h-8 rounded-full object-cover flex-shrink-0"
