@@ -7,9 +7,8 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-// import { format, formatDistanceToNow } from "date-fns";
+import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2, CalendarDays } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ interface Post {
     id: string;
     name: string;
     image: string | null;
+    createdAt: string;
   };
   createdAt: string;
   comments: Comment[];
@@ -63,22 +63,26 @@ const Myposts = () => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
+  const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/signin");
     }
   }, [status, router]);
-
   useEffect(() => {
     if (!session) return;
 
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/myposts`);
+        const postsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/myposts`);
+
+        const userDetailsResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/userdetails/${session.user.id}`
+        );
 
         const postsWithComments = await Promise.all(
-          response.data.map(async (post: Post) => {
+          postsResponse.data.map(async (post: Post) => {
             try {
               const commentsResponse = await axios.get(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${post.id}/comments`
@@ -92,6 +96,7 @@ const Myposts = () => {
         );
 
         setPosts(postsWithComments);
+        setUserCreatedAt(userDetailsResponse.data.createdAt);
       } catch (error) {
         setError(`Something went wrong, please try again. ${error}`);
       } finally {
@@ -99,7 +104,7 @@ const Myposts = () => {
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, [session]);
 
 
@@ -210,7 +215,7 @@ const Myposts = () => {
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
       <div className="max-w-2xl mx-auto mt-8">
         <div>
-          <div className="flex flex-col gap-3 items-center max-w-fit ml-2 mb-6">
+          <div className="flex flex-col gap-3 max-w-fit ml-2 mb-6">
             <Image
               width={500}
               height={500}
@@ -225,10 +230,9 @@ const Myposts = () => {
                   <p className="font-bold text-lg truncate">{session?.user.name}</p>
                   <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                   </p>
-
-                  {/* <p className="text-neutral-500 truncate text-sm">
-                    Joined {session?.user?.createdAt ? format(new Date(session.user.createdAt), "MMMM yyyy") : "Date not available"}
-                  </p> */}
+                  <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
+                    <CalendarDays className="h-4 w-4" />Joined {userCreatedAt ? format(new Date(userCreatedAt), "MMMM dd, yyyy") : "Date not available"}
+                  </p>
                 </div>
               </div>
             </div>
