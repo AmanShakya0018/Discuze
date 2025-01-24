@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Commentskeleton from "@/components/commentsskeleton";
 import Link from "next/link";
 import {
   Tooltip,
@@ -60,37 +59,43 @@ const PostPage = () => {
   const [comment, setComment] = useState("")
   const [submittingComment, setSubmittingComment] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
-  const [flag, setFlag] = useState(true);
   const userId = session?.user?.id
 
   useEffect(() => {
     if (!id) return;
 
-    const fetchPost = async () => {
+    const fetchPostAndComments = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${id}`);
-        setPost(response.data);
-        const userId = response.data.user.id;
+        setLoading(true);
 
+        const postResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${id}`
+        );
+        const postData = postResponse.data;
         const userPostsResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/userposts/${userId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/userposts/${postData.user.id}`
+        );
+        const filteredPosts = userPostsResponse.data.filter(
+          (userPost: Post) => userPost.id !== postData.id
         );
 
-        const filteredPosts = userPostsResponse.data.filter(
-          (userPost: Post) => userPost.id !== response.data.id
+        const commentsResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${id}/comments`
         );
+
+        setPost({ ...postData, comments: commentsResponse.data });
         setUserPosts(filteredPosts);
       } catch (error) {
-        setError("Error fetching post.");
-        console.error("Error fetching post:", error);
+        setError("Error fetching post and comments.");
+        console.error("Error fetching post and comments:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPost();
+    fetchPostAndComments();
   }, [id]);
+
 
   const handleShare = (postId: string) => {
     const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
@@ -105,7 +110,6 @@ const PostPage = () => {
   };
 
   const fetchComments = async (postId: string) => {
-    setCommentsLoading((prev) => ({ ...prev, [postId]: true }));
 
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${postId}/comments`);
@@ -117,8 +121,6 @@ const PostPage = () => {
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
-    } finally {
-      setCommentsLoading((prev) => ({ ...prev, [postId]: false }));
     }
   };
 
@@ -188,7 +190,19 @@ const PostPage = () => {
 
 
   if (loading) return <div className="text-center"><SinglePostSkeleton count={5} /></div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (error) return <div className="flex flex-col items-center justify-center h-screen text-neutral-800 dark:text-neutral-300 bg-transparent">
+    <h1 className="text-5xl font-bold mb-4">404</h1>
+    <p className="text-lg mb-6 text-center">
+      Oops! The page you&apos;re looking for doesn&apos;t exist.
+    </p>
+    <Link
+      href="/"
+    >
+      <Button>
+        Go Back Home
+      </Button>
+    </Link>
+  </div>;
 
   return (
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
@@ -197,8 +211,8 @@ const PostPage = () => {
           <div className="py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
             <div className="flex gap-3">
               <Image
-                width={48}
-                height={48}
+                width={500}
+                height={500}
                 src={post.user.image || "/pfp.png"}
                 alt={post.user.name}
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
@@ -221,7 +235,7 @@ const PostPage = () => {
             <div>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="mt-4 text-xs h-8 px-2">Add Comment</Button>
+                  <button className="bg-neutral-100 dark:bg-neutral-900 h-8 px-2 w-full border-b-2 border-neutral-200 dark:border-neutral-800 text-start text-neutral-500 text-xs mt-4 rounded-t-md">Add Comment...</button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
                   <DialogHeader>
@@ -253,66 +267,51 @@ const PostPage = () => {
               </Dialog>
             </div>
             <div className="mt-4">
-              {commentsLoading[post.id] ? (
-                <div>
-                  <Commentskeleton count={2} />
-                </div>
-              ) :
-                post.comments && post.comments.length > 0 ? (
-                  post.comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 py-2">
-                      <Image
-                        width={500}
-                        height={500}
-                        src={comment.user.image || "/pfp.png"}
-                        alt={comment.user.name}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                          <span className="font-bold truncate">{comment.user.name}</span>
-                          <span className="hidden sm:block text-neutral-500">·</span>
-                          <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
-                            {formatDistanceToNow(new Date(comment.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                        <p className="flex gap-1 items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+              {post?.comments && post.comments.length > 0 ? (
+                <div className="font-semibold truncate mb-2">Comments</div>
+              ) : (<span></span>)}
+              {post?.comments && post.comments.length > 0 ? (
+                post.comments.map((comment) => (
+                  <div key={comment.id} className="flex gap-3 py-2">
+                    <Image
+                      width={500}
+                      height={500}
+                      src={comment.user.image || "/pfp.png"}
+                      alt={comment.user.name}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
+                        <span className="font-bold truncate">{comment.user.name}</span>
+                        <span className="hidden sm:block text-neutral-500">·</span>
+                        <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
+                          {formatDistanceToNow(new Date(comment.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex gap-1 items-center justify-between">
+                        <p className="text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
                           {comment.content}
-                          {comment.user.id === session?.user?.id && (
-                            <button
-                              onClick={() => handleDeleteComment(comment.id)}
-                              className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
                         </p>
+                        {comment.user.id === session?.user?.id && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
-                  ))
-                ) : (
-                  !flag ? (
-                    <div className="text-neutral-500 text-sm text-center py-4">
-                      No comments available.
-                    </div>) : (
-                    <span className="hidden"></span>
-                  )
-                )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-neutral-500 text-sm text-center py-4">
+                  No comments available.
+                </div>
+              )}
             </div>
-
-            {flag && (
-              <button
-                onClick={() => {
-                  fetchComments(post.id);
-                  setFlag(false);
-                }}
-                className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
-              >
-                {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
-              </button>
-            )}
           </div>
         ) : (
           <p className="text-center text-neutral-500">Post not found.</p>
@@ -386,7 +385,7 @@ const PostPage = () => {
         )}
       </div>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
           <DialogHeader>
             <DialogTitle>Share Post</DialogTitle>
             <DialogDescription>

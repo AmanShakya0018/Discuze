@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+// import { format, formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
@@ -74,10 +75,23 @@ const Myposts = () => {
 
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/myposts`
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/myposts`);
+
+        const postsWithComments = await Promise.all(
+          response.data.map(async (post: Post) => {
+            try {
+              const commentsResponse = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/allposts/${post.id}/comments`
+              );
+              return { ...post, comments: commentsResponse.data };
+            } catch (error) {
+              console.error("Error fetching comments for post:", post.id, error);
+              return { ...post, comments: [] };
+            }
+          })
         );
-        setPosts(response.data);
+
+        setPosts(postsWithComments);
       } catch (error) {
         setError(`Something went wrong, please try again. ${error}`);
       } finally {
@@ -87,6 +101,7 @@ const Myposts = () => {
 
     fetchPosts();
   }, [session]);
+
 
   const handleDelete = async (id: string) => {
     setDeletingPostId(id);
@@ -194,6 +209,37 @@ const Myposts = () => {
   return (
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
       <div className="max-w-2xl mx-auto mt-8">
+        <div>
+          <div className="flex flex-col gap-3 items-center max-w-fit ml-2 mb-6">
+            <Image
+              width={500}
+              height={500}
+              priority
+              quality={95}
+              src={session?.user.image || "/pfp.png"}
+              alt={"pfp.png"}
+              className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+            /><div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
+                <div className="flex flex-col truncate">
+                  <p className="font-bold text-lg truncate">{session?.user.name}</p>
+                  <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
+                  </p>
+
+                  {/* <p className="text-neutral-500 truncate text-sm">
+                    Joined {session?.user?.createdAt ? format(new Date(session.user.createdAt), "MMMM yyyy") : "Date not available"}
+                  </p> */}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="dark:text-white text-zinc-950 bg-transparent font-bold w-20 h-8 overflow-hidden mb-2 ml-1">
+            <div
+              className='text-sm flex items-center justify-center border-b-4 border-emerald-500 w-20 h-8 space-x-1 mb-1.5'>
+              <span>Posts</span>
+            </div>
+          </div>
+        </div>
         {posts.length === 0 ? (
           <p className="text-center text-neutral-500">No posts available.</p>
         ) : (
@@ -304,9 +350,11 @@ const Myposts = () => {
                   </Button>
                 </div>
                 <div className="mt-4">
+                  {post.comments && post.comments.length > 0 ? (<div className="font-semibold truncate mb-2">Comments</div>
+                  ) : (<span></span>)}
                   {commentsLoading[post.id] ? (
                     <div><Commentskeleton count={2} /></div>
-                  ) : (
+                  ) : post.comments && post.comments.length > 0 ? (
                     (post.comments || []).map((comment) => (
                       <div key={comment.id} className="flex gap-3 py-2">
                         <Image
@@ -326,33 +374,33 @@ const Myposts = () => {
                               })}
                             </span>
                           </div>
-                          <p className="flex items-center justify-between text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
-                            {comment.content}
+                          <div className="flex gap-1 items-center justify-between">
+                            <p className="text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+                              {comment.content}
+                            </p>
                             <button
                               onClick={() => handleDeleteComment(comment.id, post.id)}
                               className="text-xs text-red-500 hover:text-red-700 border p-1 rounded-lg"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                          </p>
+                          </div>
                         </div>
                       </div>
                     ))
-                  )}
+                  ) :
+                    <div className="text-neutral-500 text-sm text-center py-4">
+                      No comments available.
+                    </div>
+                  }
                 </div>
-                <button
-                  onClick={() => fetchComments(post.id)}
-                  className="text-sm text-zinc-500 mt-2 ml-1 hover:text-zinc-600"
-                >
-                  {commentsLoading[post.id] ? "Loading comments..." : "Load Comments"}
-                </button>
               </div>
             ))}
           </div>
         )}
       </div>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
           <DialogHeader>
             <DialogTitle>Share Post</DialogTitle>
             <DialogDescription>
