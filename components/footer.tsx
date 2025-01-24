@@ -7,7 +7,7 @@ const Footer = () => {
 
   return (
     <div className="border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 bg-white dark:bg-black">
-      <div className="max-w-[87rem] mx-auto text-sm px-4 text-gray-400 flex sm:flex-row flex-col justify-between items-start ">
+      <div className="max-w-[80rem] mx-auto text-sm px-4 text-gray-400 flex sm:flex-row flex-col justify-between items-start ">
         <div>
           <div className="mb-4 flex">
             <Link href="/" className="flex items-center space-x-1">
