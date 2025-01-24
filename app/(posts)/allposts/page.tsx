@@ -254,14 +254,18 @@ const AllPosts = () => {
                     />
                     <div className="flex-1 min-w-0 overflow-hidden">
                       <div className="flex items-center justify-between">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                          <span className="font-bold truncate">{post.user.name}</span>
-                          <span className="hidden sm:block text-neutral-500">·</span>
-                          <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] sm:text-sm truncate">
+                        <div className="flex sm:flex-row flex-col items-start gap-2 text-sm truncate">
+                          <div className="flex flex-col justify-between truncate">
+                            <p className="font-bold truncate">{post.user.name}</p>
+                            <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
+                            </p>
+                          </div>
+                          <p className="hidden sm:block text-neutral-500">·</p>
+                          <p className="text-neutral-500 -mt-2 sm:mt-0 text-[0.725rem] sm:text-sm truncate">
                             {formatDistanceToNow(new Date(post.createdAt), {
                               addSuffix: true,
                             })}
-                          </span>
+                          </p>
                         </div>
                       </div>
                       <p className="mt-1 text-[0.95rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">

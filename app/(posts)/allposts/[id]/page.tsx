@@ -218,8 +218,12 @@ const PostPage = () => {
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                  <span className="font-bold truncate">{post.user.name}</span>
+                <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
+                  <div className="flex flex-col justify-between truncate">
+                    <p className="font-bold truncate">{post.user.name}</p>
+                    <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
+                    </p>
+                  </div>
                   <span className="hidden sm:block text-neutral-500">·</span>
                   <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] sm:text-sm truncate">
                     {formatDistanceToNow(new Date(post.createdAt), {
@@ -281,10 +285,14 @@ const PostPage = () => {
                       className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                        <span className="font-bold truncate">{comment.user.name}</span>
+                      <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
+                        <div className="flex flex-col justify-between truncate">
+                          <p className="font-bold truncate">{comment.user.name}</p>
+                          <p className="text-sm truncate text-neutral-500 -mt-1">@{comment.user.name.toLowerCase().replace(/\s+/g, "")}
+                          </p>
+                        </div>
                         <span className="hidden sm:block text-neutral-500">·</span>
-                        <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
+                        <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.725rem] truncate">
                           {formatDistanceToNow(new Date(comment.createdAt), {
                             addSuffix: true,
                           })}
@@ -334,10 +342,14 @@ const PostPage = () => {
                       />
                       <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex items-center justify-between">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                            <span className="font-bold truncate">{post.user.name}</span>
+                          <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
+                            <div className="flex flex-col justify-between truncate">
+                              <p className="font-bold truncate">{post.user.name}</p>
+                              <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
+                              </p>
+                            </div>
                             <span className="hidden sm:block text-neutral-500">·</span>
-                            <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] sm:text-sm truncate">
+                            <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.725rem] sm:text-sm truncate">
                               {formatDistanceToNow(new Date(userPost.createdAt), {
                                 addSuffix: true,
                               })}
