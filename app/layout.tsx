@@ -8,6 +8,7 @@ import Provider from "@/components/Provider";
 import SideBar from "@/components/Sidebar";
 import MobileNav from "@/components/mobilenav";
 import Navbar from "@/components/navbar";
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,7 @@ export default function RootLayout({
           <MobileNav />
           <Footer />
         </Provider>
+        <Analytics />
       </body>
     </html>
   );
