@@ -12,10 +12,10 @@ const SideBar = () => {
   const { data: session } = useSession()
   const { theme } = useTheme()
 
-  let image = '/discuzelogolight.png';
+  let image = '/discuzelogo.png';
 
-  if (theme === 'dark') {
-    image = '/discuzelogo.png';
+  if (theme === 'light') {
+    image = '/discuzelogolight.png';
   }
 
 
