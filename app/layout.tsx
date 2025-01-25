@@ -6,6 +6,8 @@ import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
 import Provider from "@/components/Provider";
 import SideBar from "@/components/Sidebar";
+import MobileNav from "@/components/mobilenav";
+import Navbar from "@/components/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +35,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen font-sans bg-background dark:bg-black antialiased`}
       >
         <Provider>
+          <Navbar />
           <div className={cn("relative flex min-h-dvh flex-col max-w-7xl mx-auto")}>
             <div className="flex flex-row">
-              <aside className="hidden lg:sticky lg:top-0 lg:overflow-hidden lg:block lg:w-[240px] lg:max-w-[240px] lg:min-w-[240px] h-screen border-r border-neutral-200 dark:border-neutral-800">
+              <aside className="hidden md:sticky md:top-0 md:overflow-hidden md:block md:w-[240px] md:max-w-[240px] md:min-w-[240px] h-screen border-r border-neutral-200 dark:border-neutral-800">
                 <div className="h-full w-full pr-2 py-2">
                   <div className="h-full flex flex-col w-full gap-4 py-2">
                     <SideBar />
@@ -47,6 +50,7 @@ export default function RootLayout({
             </div>
             <Toaster />
           </div>
+          <MobileNav />
           <Footer />
         </Provider>
       </body>

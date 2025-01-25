@@ -4,20 +4,12 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
 
 export function Themetoggle() {
   const { theme, setTheme } = useTheme();
 
   const handleClick = () => {
     setTheme(theme === "light" ? "dark" : "light");
-
-    if (theme === "dark") {
-      toast({
-        title: 'Consider using Dark Mode',
-        description: 'For the best user experience, we recommend using the dark mode.',
-      });
-    }
   };
 
   return (

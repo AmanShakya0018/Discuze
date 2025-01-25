@@ -6,12 +6,20 @@ import Image from 'next/image'
 const Footer = () => {
 
   return (
-    <div className="border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 bg-white dark:bg-black">
+    <div className="hidden md:block border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 bg-white dark:bg-black">
       <div className="max-w-[80rem] mx-auto text-sm px-4 text-gray-400 flex sm:flex-row flex-col justify-between items-start ">
         <div>
           <div className="mb-4 flex">
-            <Link href="/" className="flex items-center space-x-1">
-              <Image src="/pfp.png" width={30} height={30} priority={false} alt="Logo" unoptimized={true} className="rounded-xl" />
+            <Link href="/" className="flex items-center">
+              <Image
+                width={500}
+                height={500}
+                src="/discuzelogo.png"
+                alt="discuzelogo.png"
+                quality={100}
+                priority={true}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1"
+              />
               <span className="text-2xl font-extrabold text-black dark:text-white ">Discuze</span>
             </Link>
           </div>
@@ -25,11 +33,8 @@ const Footer = () => {
             <Link href='/'>
               <p className="hover:text-foreground/80 text-foreground/60">Home</p>
             </Link>
-            <Link href='/create'>
-              <p className="hover:text-foreground/80 text-foreground/60">Create</p>
-            </Link>
-            <Link href='/myposts'>
-              <p className="hover:text-foreground/80 text-foreground/60">My Posts</p>
+            <Link href='/profile'>
+              <p className="hover:text-foreground/80 text-foreground/60">Profile</p>
             </Link>
           </div>
           <div className="flex justify-center space-y-4 flex-col mt-4">
@@ -41,10 +46,8 @@ const Footer = () => {
             </Link>
           </div>
           <div className="flex justify-center space-y-4 flex-col mt-4">
-            {/* <p className="hover:text-foreground/80 text-foreground/60"><a href='/termsofservice' target='_blank'>Terms of Service</a></p> */}
-            <p className="hover:text-foreground/80 text-foreground/60"><Link href='/'>Terms of Service</Link></p>
-            <p className="hover:text-foreground/80 text-foreground/60"><Link href='/'>Privacy Policy</Link></p>
-            {/* <p className="hover:text-foreground/80 text-foreground/60"><a href='/privacypolicy' target='_blank'>Privacy Policy</a></p> */}
+            <p className="hover:text-foreground/80 text-foreground/60"><a href='/termsofservice' target='_blank'>Terms of Service</a></p>
+            <p className="hover:text-foreground/80 text-foreground/60"><a href='/privacypolicy' target='_blank'>Privacy Policy</a></p>
           </div>
         </div>
       </div>
