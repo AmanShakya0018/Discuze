@@ -6,9 +6,18 @@ import { Home, User2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import UserAccountNav from './UserAccountNav'
 import SignInButton from './SignInButton'
+import { useTheme } from 'next-themes'
 
 const SideBar = () => {
   const { data: session } = useSession()
+  const { theme } = useTheme()
+
+  let image = '/discuzelogolight.png';
+
+  if (theme === 'dark') {
+    image = '/discuzelogo.png';
+  }
+
 
   return (
     <div className='flex flex-col justify-between gap-2 p-2 min-h-screen relative'>
@@ -17,7 +26,7 @@ const SideBar = () => {
           <Image
             width={500}
             height={500}
-            src="/discuzelogo.png"
+            src={image}
             alt="discuzelogo.png"
             quality={100}
             priority={true}

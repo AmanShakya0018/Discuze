@@ -2,8 +2,16 @@
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
+import { useTheme } from 'next-themes'
 
 const Footer = () => {
+  const { theme } = useTheme()
+
+  let image = '/discuzelogolight.png';
+
+  if (theme === 'dark') {
+    image = '/discuzelogo.png';
+  }
 
   return (
     <div className="hidden md:block border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 bg-white dark:bg-black">
@@ -14,7 +22,7 @@ const Footer = () => {
               <Image
                 width={500}
                 height={500}
-                src="/discuzelogo.png"
+                src={image}
                 alt="discuzelogo.png"
                 quality={100}
                 priority={true}

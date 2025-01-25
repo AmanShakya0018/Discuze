@@ -6,11 +6,19 @@ import Image from 'next/image';
 import SignInButton from './SignInButton';
 import { useSession } from 'next-auth/react';
 import UserAccountNavMobile from './UserAccountNavMobile';
+import { useTheme } from 'next-themes';
 
 
 const Navbar = () => {
 
   const { data: session } = useSession();
+  const { theme } = useTheme()
+
+  let image = '/discuzelogolight.png';
+
+  if (theme === 'dark') {
+    image = '/discuzelogo.png';
+  }
 
   return (
     <nav className="block md:hidden z-50 sticky top-0 w-full bg-secondary/15 shadow-lg shadow-neutral-600/5 backdrop-blur-lg border-b border-primary/10 px-4 lg:px-8
@@ -22,7 +30,7 @@ const Navbar = () => {
               <Image
                 width={500}
                 height={500}
-                src="/discuzelogo.png"
+                src={image}
                 alt="discuzelogo.png"
                 quality={100}
                 priority={true}
