@@ -306,7 +306,7 @@ const Myposts = () => {
                             </div>
                           ) : (
                             <div className="text-sm text-neutral-500">
-                              {charCount}/799 characters
+                              {799 - charCount} characters remaining
                             </div>
                           )}
                         </div>

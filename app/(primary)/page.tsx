@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
-import PostSkeleton from "./(posts)/allposts/loading";
+
 import { MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
 import {
   Dialog,
@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
+import PostSkeleton from "./loading";
 
 interface Post {
   id: string;
@@ -202,7 +203,7 @@ const Home = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm text-gray-500 mb-2">
-                  {content.length}/799 characters
+                  {799 - content.length} characters remaining
                 </span>
                 <button className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-neutral-500 border px-5 py-2 rounded-lg"
                   onClick={handlePostSubmit}
