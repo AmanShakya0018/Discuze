@@ -1,7 +1,22 @@
 "use client"
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import axios from "axios";
 import { useParams } from "next/navigation";
+import { CalendarDays, MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface User {
   id: string;
@@ -16,6 +31,9 @@ export default function PublicProfile() {
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) {
@@ -40,32 +58,189 @@ export default function PublicProfile() {
     fetchUserProfile();
   }, [id]);
 
+  const handleShare = (postId: string) => {
+    const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
+    setSelectedPostId(postId);
+    setOpenDialog(true);
+
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        setLinkCopied(true);
+      })
+      .catch((err) => {
+        console.error("Error copying the link: ", err);
+      });
+  };
+
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!user) return <p className="text-center mt-10 text-red-500">User not found.</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
-        {/* {user.image && <img src={user.image} alt={user.name} className="w-16 h-16 rounded-full" />} */}
-        <div>
-          <h1 className="text-2xl font-bold">{user.name}</h1>
-          <p className="text-gray-500">Joined: {new Date(user.createdAt).toLocaleDateString()}</p>
+
+      <div>
+        <div className="flex flex-col gap-3 max-w-fit ml-2 mb-6">
+          <Image
+            width={500}
+            height={500}
+            priority
+            quality={95}
+            src={user.image || "/pfp.png"}
+            alt={"pfp.png"}
+            className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
+              <div className="flex flex-col truncate">
+                <p className="font-bold text-lg truncate">{user.name}</p>
+                <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{user.name?.toLowerCase().replace(/\s+/g, "")}
+                </p>
+                <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
+                  <CalendarDays className="h-4 w-4" />Joined {user.createdAt ? format(new Date(user.createdAt), "MMMM dd, yyyy") : "Date not available"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="dark:text-white text-zinc-950 bg-transparent font-bold w-20 h-8 overflow-hidden mb-2 ml-1">
+          <div
+            className='text-sm flex items-center justify-center border-b-4 border-emerald-500 w-20 h-8 space-x-1 mb-1.5'>
+            <span>Posts</span>
+          </div>
         </div>
       </div>
-
-      <h2 className="text-xl font-semibold mt-6">Posts</h2>
       {user.Post.length > 0 ? (
         <div className="mt-4 space-y-4">
           {user.Post.map((post) => (
-            <div key={post.id} className="p-4 bg-white shadow rounded-md">
-              <p className="text-gray-600">{post.content}</p>
-              <p className="text-xs text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</p>
+            <div key={post.id}>
+              <div className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
+                <div className="flex gap-3 flex-grow overflow-hidden">
+                  <Image
+                    width={500}
+                    height={500}
+                    src={user.image || "/pfp.png"}
+                    alt={user.name}
+                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="flex items-center justify-between">
+                      <div className="flex sm:flex-row flex-col items-start gap-2 text-sm truncate">
+                        <div className="flex flex-col justify-between truncate">
+                          <p className="font-bold truncate">{user.name}</p>
+                          <p className="text-sm truncate text-neutral-500 -mt-1">@{user.name.toLowerCase().replace(/\s+/g, "")}
+                          </p>
+                        </div>
+                        <p className="hidden sm:block text-neutral-500">·</p>
+                        <p className="text-neutral-500 -mt-2 sm:mt-0 text-[0.725rem] sm:text-sm truncate">
+                          {formatDistanceToNow(new Date(post.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-1 text-[0.95rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
+                      {post.content}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 ml-4 flex-shrink-0">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          className="text-zinc-500 hover:text-zinc-600 text-sm"
+                          href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                          target="_blank"
+                        >
+                          <SquareArrowOutUpRight className="h-4 w-4 mx-[2px]" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View Post</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                          target="_blank"
+                          className="text-zinc-500 hover:text-zinc-600 text-sm"
+                        >
+                          <MessageSquare className="h-4 w-4 mx-[2px]" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Comments</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button onClick={() => handleShare(post.id)} className="text-zinc-500 hover:text-zinc-600 text-sm">
+                          <Share2 className="h-4 w-4 mx-[2px]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Share</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       ) : (
         <p className="mt-4 text-gray-500">No posts found.</p>
       )}
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
+          <DialogHeader>
+            <DialogTitle>Share Post</DialogTitle>
+            <DialogDescription>
+              Copy the link to share this post with others.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="postLink" className="text-right">
+                Post Link
+              </Label>
+              <Input
+                id="postLink"
+                value={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+                readOnly
+                className="col-span-3"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                if (selectedPostId) {
+                  navigator.clipboard
+                    .writeText(
+                      `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
+                    )
+                    .then(() => {
+                      setLinkCopied(true);
+                    })
+                    .catch((err) => {
+                      console.error("Error copying the link: ", err);
+                    });
+                }
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              {linkCopied ? "Link Copied!" : "Copy Link"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
