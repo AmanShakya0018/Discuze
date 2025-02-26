@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PostSkeleton from "./loading";
 
 interface User {
   id: string;
@@ -73,7 +74,7 @@ export default function PublicProfile() {
       });
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (!user) return <p className="text-center mt-10 text-red-500">User not found.</p>;
 
   return (
@@ -191,7 +192,7 @@ export default function PublicProfile() {
           ))}
         </div>
       ) : (
-        <p className="mt-4 text-gray-500">No posts found.</p>
+        <p className="text-center text-neutral-500 pt-4">No posts available.</p>
       )}
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
