@@ -20,7 +20,7 @@ export async function GET(request: Request, { params }: Params) {
 
     return NextResponse.json(userPosts);
   } catch (error) {
-    console.error("Error fetching user posts:", error);
+    console.log("Error fetching user posts:", error);
     return NextResponse.error();
   }
 }

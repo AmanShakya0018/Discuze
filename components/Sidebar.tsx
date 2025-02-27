@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
-import { Home, User2 } from 'lucide-react'
+import { Home, Search, User2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import UserAccountNav from './UserAccountNav'
 import SignInButton from './SignInButton'
@@ -47,6 +47,12 @@ const SideBar = () => {
             className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-fit p-2'>
             <User2 className="text-2xl" height={25} width={25} />
             <h3 className="text-lg lg:text-xl  ml-2">Profile</h3>
+          </Link>
+          <Link
+            href="/search"
+            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-fit p-2'>
+            <Search className="text-2xl" height={25} width={25} />
+            <h3 className="text-lg lg:text-xl  ml-2">Search</h3>
           </Link>
         </div>
       </div>
