@@ -120,6 +120,7 @@ export default function PublicProfile() {
                   <Image
                     width={500}
                     height={500}
+                    priority={true}
                     src={user.image || "/pfp.png"}
                     alt={user.name}
                     className="w-10 h-10 rounded-full object-cover flex-shrink-0"
