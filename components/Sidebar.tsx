@@ -37,20 +37,20 @@ const SideBar = () => {
         <div className='flex flex-col gap-4 mt-6 w-full'>
           <Link
             href="/"
-            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-fit p-2'
+            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-full p-2'
           >
             <Home className="text-2xl " height={25} width={25} />
             <h3 className="text-lg lg:text-xl ml-2">Home</h3>
           </Link>
           <Link
             href="/profile"
-            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-fit p-2'>
+            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-full p-2'>
             <User2 className="text-2xl" height={25} width={25} />
             <h3 className="text-lg lg:text-xl  ml-2">Profile</h3>
           </Link>
           <Link
             href="/search"
-            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-fit p-2'>
+            className='flex justify-start items-center rounded-xl dark:hover:bg-neutral-900 hover:bg-neutral-100 max-w-full p-2'>
             <Search className="text-2xl" height={25} width={25} />
             <h3 className="text-lg lg:text-xl  ml-2">Search</h3>
           </Link>
