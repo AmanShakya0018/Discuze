@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 
 import { MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
@@ -25,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
-import PostSkeleton from "./loading";
+import PostSkeleton, { PostsSkeleton } from "./loading";
 
 interface Post {
   id: string;
@@ -53,30 +54,42 @@ interface Comment {
 const Home = () => {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [initialloading, setInitialoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [content, setContent] = useState("");
-
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [postloading, setPostLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts`);
-        setPosts(response.data);
-      } catch (error) {
-        setError("Something went wrong, please try again.");
-        console.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchPosts = async () => {
+    if (!hasMore || loading) return;
+
+    setLoading(true);
+    try {
+      // console.log("Fetching page:", page);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts?page=${page}`);
+
+      setPosts((prev) => [...prev, ...response.data.posts]);
+      setHasMore(response.data.hasMore);
+
+      setPage((prevPage) => prevPage + 1);
+    } catch (error) {
+      setError("Something went wrong, please try again.");
+      console.error("Error fetching posts:", error);
+    } finally {
+      setInitialoading(false);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchPosts();
-  }, []);
+  },);
 
   const handlePostSubmit = async () => {
 
@@ -151,7 +164,7 @@ const Home = () => {
       });
   };
 
-  if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
+  if (initialloading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -241,12 +254,18 @@ const Home = () => {
         {posts.length === 0 ? (
           <p className="text-center text-neutral-500">No posts available.</p>
         ) : (
-          <div className="flex flex-col gap-3 py-2">
-            {posts.map((post) => (
-              <div key={post.id}>
-                <div className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
+          <InfiniteScroll
+            dataLength={posts.length}
+            next={fetchPosts}
+            hasMore={hasMore}
+            loader={<div className="text-center"><PostsSkeleton count={2} /></div>}
+          // endMessage={<p className="text-center">no more posts</p>}
+          >
+            <div className="flex flex-col gap-3">
+              {posts.map((post) => (
+                <div key={post.id} className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
                   <div className="flex gap-3 flex-grow overflow-hidden">
-                    <Link href={`${process.env.NEXT_PUBLIC_API_URL}/profile/${post.user.id}`} target="_blank">
+                    <Link href={`/profile/${post.user.id}`} target="_blank">
                       <Image
                         width={500}
                         height={500}
@@ -259,17 +278,16 @@ const Home = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex sm:flex-row flex-col items-start gap-2 text-sm truncate">
                           <div className="flex flex-col justify-between truncate">
-                            <Link href={`${process.env.NEXT_PUBLIC_API_URL}/profile/${post.user.id}`} target="_blank">
+                            <Link href={`/profile/${post.user.id}`} target="_blank">
                               <p className="font-bold truncate">{post.user.name}</p>
                             </Link>
-                            <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
+                            <p className="text-sm truncate text-neutral-500 -mt-1">
+                              @{post.user.name.toLowerCase().replace(/\s+/g, "")}
                             </p>
                           </div>
                           <p className="hidden sm:block text-neutral-500">·</p>
                           <p className="text-neutral-500 -mt-2 sm:mt-0 text-[0.725rem] sm:text-sm truncate">
-                            {formatDistanceToNow(new Date(post.createdAt), {
-                              addSuffix: true,
-                            })}
+                            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                           </p>
                         </div>
                       </div>
@@ -284,7 +302,7 @@ const Home = () => {
                         <TooltipTrigger asChild>
                           <Link
                             className="text-zinc-500 hover:text-zinc-600 text-sm"
-                            href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                            href={`/allposts/${post.id}`}
                             target="_blank"
                           >
                             <SquareArrowOutUpRight className="h-4 w-4 mx-[2px]" />
@@ -297,7 +315,7 @@ const Home = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Link
-                            href={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${post.id}`}
+                            href={`/allposts/${post.id}`}
                             target="_blank"
                             className="text-zinc-500 hover:text-zinc-600 text-sm"
                           >
@@ -321,9 +339,9 @@ const Home = () => {
                     </TooltipProvider>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </InfiniteScroll>
         )}
       </div>
 
