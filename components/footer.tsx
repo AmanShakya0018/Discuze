@@ -44,6 +44,9 @@ const Footer = () => {
             <Link href='/profile'>
               <p className="hover:text-foreground/80 text-foreground/60">Profile</p>
             </Link>
+            <Link href='/search'>
+              <p className="hover:text-foreground/80 text-foreground/60">Search</p>
+            </Link>
           </div>
           <div className="flex justify-center space-y-4 flex-col mt-4">
             <Link href='https://x.com/AmanShakya0018' target="_blank">
