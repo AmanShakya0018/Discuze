@@ -74,7 +74,9 @@ const Home = () => {
       // console.log("Fetching page:", page);
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/allposts?page=${page}`);
 
-      setPosts((prev) => [...prev, ...response.data.posts]);
+      const fetchedPosts = Array.isArray(response.data.posts) ? response.data.posts : [];
+
+      setPosts((prev) => [...prev, ...fetchedPosts]);
       setHasMore(response.data.hasMore);
 
       setPage((prevPage) => prevPage + 1);
@@ -126,7 +128,13 @@ const Home = () => {
         const updatedPosts = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/allposts`
         );
-        setPosts(updatedPosts.data);
+        if (Array.isArray(updatedPosts.data.posts)) {
+          setPosts(updatedPosts.data.posts);
+          setHasMore(updatedPosts.data.hasMore);
+          setPage(2);
+        } else {
+          console.error("Invalid posts data:", updatedPosts.data);
+        }
       } else {
         toast({
           description: response.data.message || "Something went wrong"
