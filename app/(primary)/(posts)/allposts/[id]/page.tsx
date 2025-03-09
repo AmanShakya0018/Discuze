@@ -281,17 +281,21 @@ const PostPage = () => {
               {post?.comments && post.comments.length > 0 ? (
                 post.comments.map((comment) => (
                   <div key={comment.id} className="flex gap-3 py-2">
-                    <Image
-                      width={500}
-                      height={500}
-                      src={comment.user.image || "/pfp.png"}
-                      alt={comment.user.name}
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
+                    <Link href={`/profile/${comment.user.id}`} target="_blank">
+                      <Image
+                        width={500}
+                        height={500}
+                        src={comment.user.image || "/pfp.png"}
+                        alt={comment.user.name}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                    </Link>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                         <div className="flex flex-col justify-between truncate">
-                          <p className="font-bold truncate">{comment.user.name}</p>
+                          <Link href={`/profile/${comment.user.id}`} target="_blank">
+                            <p className="font-bold truncate">{comment.user.name}</p>
+                          </Link>
                           <p className="text-sm truncate text-neutral-500 -mt-1">@{comment.user.name.toLowerCase().replace(/\s+/g, "")}
                           </p>
                         </div>
