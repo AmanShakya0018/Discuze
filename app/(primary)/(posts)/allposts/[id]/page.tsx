@@ -210,17 +210,21 @@ const PostPage = () => {
         {post ? (
           <div className="py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
             <div className="flex gap-3">
-              <Image
-                width={500}
-                height={500}
-                src={post.user.image || "/pfp.png"}
-                alt={post.user.name}
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              />
+              <Link href={`/profile/${post.user.id}`} target="_blank">
+                <Image
+                  width={500}
+                  height={500}
+                  src={post.user.image || "/pfp.png"}
+                  alt={post.user.name}
+                  className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                />
+              </Link>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                   <div className="flex flex-col justify-between truncate">
-                    <p className="font-bold truncate">{post.user.name}</p>
+                    <Link href={`/profile/${post.user.id}`} target="_blank">
+                      <p className="font-bold truncate">{post.user.name}</p>
+                    </Link>
                     <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                     </p>
                   </div>
@@ -333,18 +337,22 @@ const PostPage = () => {
                 <div key={userPost.id}>
                   <div className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
                     <div className="flex gap-3 flex-grow overflow-hidden">
-                      <Image
-                        width={500}
-                        height={500}
-                        src={post.user.image || "/pfp.png"}
-                        alt={post.user.name}
-                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                      />
+                      <Link href={`/profile/${post.user.id}`} target="_blank">
+                        <Image
+                          width={500}
+                          height={500}
+                          src={post.user.image || "/pfp.png"}
+                          alt={post.user.name}
+                          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                        />
+                      </Link>
                       <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                             <div className="flex flex-col justify-between truncate">
-                              <p className="font-bold truncate">{post.user.name}</p>
+                              <Link href={`/profile/${post.user.id}`} target="_blank">
+                                <p className="font-bold truncate">{post.user.name}</p>
+                              </Link>
                               <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                               </p>
                             </div>
