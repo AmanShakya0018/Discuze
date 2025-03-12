@@ -11,7 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
+  DialogFooter2,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -385,8 +385,30 @@ const Home = () => {
               />
             </div>
           </div>
-
-          <DialogFooter className="flex flex-col">
+          <DialogFooter2 className="flex-row space-x-1 justify-between items-center">
+            <FacebookShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              quote={'Join the discussion and share your thoughts on the latest tech topics!'}
+              hashtag={'#discuze'}
+            >
+              <FacebookIcon size={32} round />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              title={'Join the discussion and share your thoughts on the latest tech topics!'}
+            >
+              <TwitterIcon size={32} round />
+            </TwitterShareButton>
+            <WhatsappShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              title={'Join the discussion and share your thoughts on the latest tech topics!'}
+              separator=":: "
+            >
+              <WhatsappIcon size={32} round />
+            </WhatsappShareButton>
+            <LinkedinShareButton url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}>
+              <LinkedinIcon size={32} round />
+            </LinkedinShareButton>
             <div>
               <Button
                 onClick={() => {
@@ -409,32 +431,7 @@ const Home = () => {
                 {linkCopied ? "Link Copied!" : "Copy Link"}
               </Button>
             </div>
-            <div>
-              <FacebookShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
-                quote={'Join the discussion and share your thoughts on the latest tech topics!'}
-                hashtag={'#discuze'}
-              >
-                <FacebookIcon size={32} round />
-              </FacebookShareButton>
-              <TwitterShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
-                title={'Join the discussion and share your thoughts on the latest tech topics!'}
-              >
-                <TwitterIcon size={32} round />
-              </TwitterShareButton>
-              <WhatsappShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
-                title={'Join the discussion and share your thoughts on the latest tech topics!'}
-                separator=":: "
-              >
-                <WhatsappIcon size={32} round />
-              </WhatsappShareButton>
-              <LinkedinShareButton url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}>
-                <LinkedinIcon size={32} round />
-              </LinkedinShareButton>
-            </div>
-          </DialogFooter>
+          </DialogFooter2>
         </DialogContent>
       </Dialog>
     </div>

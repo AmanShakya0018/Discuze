@@ -81,6 +81,20 @@ const DialogFooter = ({
 )
 DialogFooter.displayName = "DialogFooter"
 
+const DialogFooter2 = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex",
+      className
+    )}
+    {...props}
+  />
+)
+DialogFooter2.displayName = "DialogFooter2"
+
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
@@ -117,6 +131,7 @@ export {
   DialogContent,
   DialogHeader,
   DialogFooter,
+  DialogFooter2,
   DialogTitle,
   DialogDescription,
 }
