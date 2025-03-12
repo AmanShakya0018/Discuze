@@ -31,6 +31,10 @@ import {
   FacebookIcon,
   TwitterIcon,
   TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  LinkedinIcon,
 } from 'next-share'
 import PostSkeleton, { PostsSkeleton } from "./loading";
 
@@ -419,7 +423,16 @@ const Home = () => {
               >
                 <TwitterIcon size={32} round />
               </TwitterShareButton>
-
+              <WhatsappShareButton
+                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+                title={'Join the discussion and share your thoughts on the latest tech topics!'}
+                separator=":: "
+              >
+                <WhatsappIcon size={32} round />
+              </WhatsappShareButton>
+              <LinkedinShareButton url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}>
+                <LinkedinIcon size={32} round />
+              </LinkedinShareButton>
             </div>
           </DialogFooter>
         </DialogContent>
