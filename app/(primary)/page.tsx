@@ -26,6 +26,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
+import {
+  FacebookShareButton,
+  FacebookIcon,
+} from 'next-share'
 import PostSkeleton, { PostsSkeleton } from "./loading";
 
 interface Post {
@@ -376,27 +380,38 @@ const Home = () => {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                if (selectedPostId) {
-                  navigator.clipboard
-                    .writeText(
-                      `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
-                    )
-                    .then(() => {
-                      setLinkCopied(true);
-                    })
-                    .catch((err) => {
-                      console.error("Error copying the link: ", err);
-                    });
-                }
-              }}
-              variant="outline"
-              className="w-full"
-            >
-              {linkCopied ? "Link Copied!" : "Copy Link"}
-            </Button>
+          <DialogFooter className="flex flex-col">
+            <div>
+              <Button
+                onClick={() => {
+                  if (selectedPostId) {
+                    navigator.clipboard
+                      .writeText(
+                        `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
+                      )
+                      .then(() => {
+                        setLinkCopied(true);
+                      })
+                      .catch((err) => {
+                        console.error("Error copying the link: ", err);
+                      });
+                  }
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                {linkCopied ? "Link Copied!" : "Copy Link"}
+              </Button>
+            </div>
+            <div>
+              <FacebookShareButton
+                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+                quote={'Join the discussion and share your thoughts on the latest tech topics!'}
+                hashtag={'#discuze'}
+              >
+                <FacebookIcon size={32} round />
+              </FacebookShareButton>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
