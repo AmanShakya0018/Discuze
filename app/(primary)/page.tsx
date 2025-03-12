@@ -29,6 +29,8 @@ import { toast } from "@/hooks/use-toast";
 import {
   FacebookShareButton,
   FacebookIcon,
+  TwitterIcon,
+  TwitterShareButton,
 } from 'next-share'
 import PostSkeleton, { PostsSkeleton } from "./loading";
 
@@ -411,6 +413,13 @@ const Home = () => {
               >
                 <FacebookIcon size={32} round />
               </FacebookShareButton>
+              <TwitterShareButton
+                url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+                title={'Join the discussion and share your thoughts on the latest tech topics!'}
+              >
+                <TwitterIcon size={32} round />
+              </TwitterShareButton>
+
             </div>
           </DialogFooter>
         </DialogContent>
