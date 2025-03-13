@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import UserAccountNav from './UserAccountNav'
 import SignInButton from './SignInButton'
 import { useTheme } from 'next-themes'
+import { Themetoggle } from './ui/ThemeToggle'
 
 const SideBar = () => {
   const { data: session } = useSession()
@@ -66,7 +67,10 @@ const SideBar = () => {
             </div> */}
           </div>
         ) : (
-          <SignInButton text={"Sign In"} />
+          <div className='flex flex-row gap-2 items-center'>
+            <SignInButton text={"Sign In"} />
+            <Themetoggle />
+          </div>
         )}
       </div>
     </div>

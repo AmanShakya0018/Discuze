@@ -233,7 +233,7 @@ const PostPage = () => {
                 <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                   <div className="flex flex-col justify-between truncate">
                     <Link href={`/profile/${post.user.id}`} target="_blank">
-                      <p className="font-bold truncate">{post.user.name}</p>
+                      <p className="font-bold truncate hover:underline">{post.user.name}</p>
                     </Link>
                     <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                     </p>
@@ -304,7 +304,7 @@ const PostPage = () => {
                       <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                         <div className="flex flex-col justify-between truncate">
                           <Link href={`/profile/${comment.user.id}`} target="_blank">
-                            <p className="font-bold truncate">{comment.user.name}</p>
+                            <p className="font-bold truncate hover:underline">{comment.user.name}</p>
                           </Link>
                           <p className="text-sm truncate text-neutral-500 -mt-1">@{comment.user.name.toLowerCase().replace(/\s+/g, "")}
                           </p>
@@ -365,7 +365,7 @@ const PostPage = () => {
                           <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                             <div className="flex flex-col justify-between truncate">
                               <Link href={`/profile/${post.user.id}`} target="_blank">
-                                <p className="font-bold truncate">{post.user.name}</p>
+                                <p className="font-bold truncate hover:underline">{post.user.name}</p>
                               </Link>
                               <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                               </p>

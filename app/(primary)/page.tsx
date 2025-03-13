@@ -206,7 +206,7 @@ const Home = () => {
                   {session?.user.name ? (
                     <>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                        <p className="font-bold truncate">{session?.user.name}</p>
+                        <p className="font-bold truncate hover:underline">{session?.user.name}</p>
                       </div>
                       <p className="text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                       </p>
@@ -233,7 +233,7 @@ const Home = () => {
                 ></textarea>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500 mb-2">
+                <span className="text-xs sm:text-sm text-neutral-500 mb-2">
                   {799 - content.length} characters remaining
                 </span>
                 <button className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-neutral-500 border px-5 py-2 rounded-lg"
@@ -279,7 +279,7 @@ const Home = () => {
             loader={<div className="text-center"><PostsSkeleton count={2} /></div>}
           // endMessage={<p className="text-center">no more posts</p>}
           >
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pb-4">
               {posts.map((post) => (
                 <div key={post.id} className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl">
                   <div className="flex gap-3 flex-grow overflow-hidden">
@@ -297,7 +297,7 @@ const Home = () => {
                         <div className="flex sm:flex-row flex-col items-start gap-2 text-sm truncate">
                           <div className="flex flex-col justify-between truncate">
                             <Link href={`/profile/${post.user.id}`} target="_blank">
-                              <p className="font-bold truncate">{post.user.name}</p>
+                              <p className="font-bold truncate hover:underline">{post.user.name}</p>
                             </Link>
                             <p className="text-sm truncate text-neutral-500 -mt-1">
                               @{post.user.name.toLowerCase().replace(/\s+/g, "")}

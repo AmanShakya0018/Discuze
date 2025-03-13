@@ -62,7 +62,7 @@ export default function SignInPage() {
                 Sign in
               </button>
             </div>
-            <p className="text-sm text-muted-foreground text-center">By signing up, you agree to the <Link className='underline' href="/termsofservice">Terms of Service</Link> and <Link className='underline' href="/privacypolicy">Privacy Policy.</Link></p>
+            <p className="text-sm text-muted-foreground text-center">By signing up, you agree to the <Link className='underline' href="/termsofservice" target='_blank'>Terms of Service</Link> and <Link className='underline' href="/privacypolicy" target='_blank'>Privacy Policy.</Link></p>
           </div>
         </div>
       </div>
