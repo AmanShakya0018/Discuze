@@ -5,6 +5,16 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { CalendarDays, MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  LinkedinIcon,
+} from 'next-share'
 
 import {
   Tooltip,
@@ -14,7 +24,7 @@ import {
 } from "@/components/ui/tooltip"
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter2, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PostSkeleton from "./loading";
@@ -219,28 +229,53 @@ export default function PublicProfile() {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                if (selectedPostId) {
-                  navigator.clipboard
-                    .writeText(
-                      `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
-                    )
-                    .then(() => {
-                      setLinkCopied(true);
-                    })
-                    .catch((err) => {
-                      console.error("Error copying the link: ", err);
-                    });
-                }
-              }}
-              variant="outline"
-              className="w-full"
+          <DialogFooter2 className="flex-row space-x-1 justify-between items-center">
+            <FacebookShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              quote={'Join the discussion and share your thoughts on the latest tech topics!'}
+              hashtag={'#discuze'}
             >
-              {linkCopied ? "Link Copied!" : "Copy Link"}
-            </Button>
-          </DialogFooter>
+              <FacebookIcon size={32} round />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              title={'Join the discussion and share your thoughts on the latest tech topics!'}
+            >
+              <TwitterIcon size={32} round />
+            </TwitterShareButton>
+            <WhatsappShareButton
+              url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}
+              title={'Join the discussion and share your thoughts on the latest tech topics!'}
+              separator=":: "
+            >
+              <WhatsappIcon size={32} round />
+            </WhatsappShareButton>
+            <LinkedinShareButton url={`${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`}>
+              <LinkedinIcon size={32} round />
+            </LinkedinShareButton>
+            <div>
+              <Button
+                onClick={() => {
+                  if (selectedPostId) {
+                    navigator.clipboard
+                      .writeText(
+                        `${process.env.NEXT_PUBLIC_API_URL}/allposts/${selectedPostId}`
+                      )
+                      .then(() => {
+                        setLinkCopied(true);
+                      })
+                      .catch((err) => {
+                        console.error("Error copying the link: ", err);
+                      });
+                  }
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                {linkCopied ? "Link Copied!" : "Copy Link"}
+              </Button>
+            </div>
+          </DialogFooter2>
         </DialogContent>
       </Dialog>
     </div>
