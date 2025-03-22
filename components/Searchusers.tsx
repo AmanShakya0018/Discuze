@@ -6,12 +6,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { debounce } from "lodash";
 import { Spinner } from "./ui/spinner";
+import { MdVerified } from "react-icons/md";
 
 interface User {
   id: string;
   name: string;
   username: string;
   image: string | null;
+  isVerified: boolean;
 }
 
 const SearchUsers = () => {
@@ -74,8 +76,9 @@ const SearchUsers = () => {
                     <AvatarFallback>{user.name[0]}</AvatarFallback>
                   </Avatar>
                   <div className="ml-2">
-                    <p className="text-sm text-zinc-900 dark:text-zinc-100 font-medium hover:underline">
+                    <p className="text-sm flex items-center gap-[2px] text-zinc-900 dark:text-zinc-100 font-medium hover:underline">
                       {user.name}
+                      {user.isVerified && <MdVerified size={12} fill="#1D9BF0" />}
                     </p>
                     <p className="text-xs text-zinc-500">
                       @{user.name?.toLowerCase().replace(/\s+/g, "")}

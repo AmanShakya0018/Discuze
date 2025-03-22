@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
           { name: { contains: query, mode: "insensitive" } },
         ],
       },
-      select: { id: true, name: true, image: true },
+      select: { id: true, name: true, image: true,isVerified:true },
     });
 
     return NextResponse.json({ users });

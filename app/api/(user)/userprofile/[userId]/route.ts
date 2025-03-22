@@ -22,6 +22,7 @@ export async function GET(request: NextRequest, { params }: Params) {
         image: true,
         email: true,
         createdAt: true,
+        isVerified: true,
         Post: {
           orderBy: { createdAt: "desc" },
           select: { id: true, content: true, createdAt: true },

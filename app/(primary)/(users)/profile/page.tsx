@@ -13,6 +13,7 @@ import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MdVerified } from "react-icons/md";
 import Link from "next/link";
 import Commentskeleton from "@/components/commentsskeleton";
 import {
@@ -46,6 +47,7 @@ interface Comment {
     id: string;
     name: string;
     image: string | null;
+    isVerified: boolean;
   };
   createdAt: string;
 }
@@ -74,6 +76,7 @@ const Myposts = () => {
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
+  const [userVerified, setUserVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -107,6 +110,7 @@ const Myposts = () => {
 
         setPosts(postsWithComments);
         setUserCreatedAt(userDetailsResponse.data.createdAt);
+        setUserVerified(userDetailsResponse.data.isVerified);
       } catch (error) {
         setError(`Something went wrong, please try again. ${error}`);
       } finally {
@@ -237,7 +241,9 @@ const Myposts = () => {
             /><div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
                 <div className="flex flex-col truncate">
-                  <p className="font-bold text-lg truncate">{session?.user.name}</p>
+                  <p className="font-bold flex items-center gap-1 text-lg truncate">{session?.user.name}
+                    {userVerified && <MdVerified size={16} fill="#1D9BF0" />}
+                  </p>
                   <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                   </p>
                   <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
@@ -380,7 +386,9 @@ const Myposts = () => {
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                            <span className="font-bold truncate">{comment.user.name}</span>
+                            <p className="font-bold flex items-center gap-1 truncate hover:underline">{comment.user.name}
+                              {comment.user.isVerified && <MdVerified size={13} fill="#1D9BF0" className="mt-[2px]" />}
+                            </p>
                             <span className="hidden sm:block text-neutral-500">·</span>
                             <span className="text-neutral-500 -mt-2 sm:mt-0 text-[0.75rem] truncate">
                               {formatDistanceToNow(new Date(comment.createdAt), {

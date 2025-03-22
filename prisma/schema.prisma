@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  name      String
-  image     String
-  email     String     @unique
-  createdAt DateTime   @default(now())
-  provider  Provider
-  Post      Post[]
-  Comment   Comment[]
-  bookmarks Bookmark[]
+  id         String     @id @default(uuid())
+  name       String
+  image      String
+  email      String     @unique
+  isVerified Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  provider   Provider
+  Post       Post[]
+  Comment    Comment[]
+  bookmarks  Bookmark[]
 }
 
 model Post {

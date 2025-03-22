@@ -31,6 +31,7 @@ import {
   LinkedinShareButton,
   LinkedinIcon,
 } from 'next-share'
+import { MdVerified } from "react-icons/md";
 
 interface Post {
   id: string;
@@ -39,6 +40,7 @@ interface Post {
     id: string;
     name: string;
     image: string | null;
+    isVerified: boolean;
   };
   createdAt: string,
   comments: Comment[];
@@ -51,6 +53,7 @@ interface Comment {
     id: string;
     name: string;
     image: string | null;
+    isVerified: boolean;
   };
   createdAt: string;
 }
@@ -233,7 +236,9 @@ const PostPage = () => {
                 <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                   <div className="flex flex-col justify-between truncate">
                     <Link href={`/profile/${post.user.id}`} target="_blank">
-                      <p className="font-bold truncate hover:underline">{post.user.name}</p>
+                      <p className="font-bold flex items-center gap-1 truncate hover:underline">{post.user.name}
+                        {post.user.isVerified && <MdVerified size={13} fill="#1D9BF0" className="mt-[2px]" />}
+                      </p>
                     </Link>
                     <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                     </p>
@@ -304,7 +309,9 @@ const PostPage = () => {
                       <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                         <div className="flex flex-col justify-between truncate">
                           <Link href={`/profile/${comment.user.id}`} target="_blank">
-                            <p className="font-bold truncate hover:underline">{comment.user.name}</p>
+                            <p className="font-bold truncate flex items-center gap-1 hover:underline">{comment.user.name}
+                              {comment.user.isVerified && <MdVerified size={13} fill="#1D9BF0" className="mt-[2px]" />}
+                            </p>
                           </Link>
                           <p className="text-sm truncate text-neutral-500 -mt-1">@{comment.user.name.toLowerCase().replace(/\s+/g, "")}
                           </p>
@@ -365,7 +372,9 @@ const PostPage = () => {
                           <div className="flex flex-col sm:flex-row items-start gap-2 text-sm truncate">
                             <div className="flex flex-col justify-between truncate">
                               <Link href={`/profile/${post.user.id}`} target="_blank">
-                                <p className="font-bold truncate hover:underline">{post.user.name}</p>
+                                <p className="font-bold flex items-center gap-1 truncate hover:underline">{post.user.name}
+                                  {post.user.isVerified && <MdVerified size={13} fill="#1D9BF0" className="mt-[2px]" />}
+                                </p>
                               </Link>
                               <p className="text-sm truncate text-neutral-500 -mt-1">@{post.user.name.toLowerCase().replace(/\s+/g, "")}
                               </p>

@@ -28,6 +28,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter2, DialogHeader, 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PostSkeleton from "./loading";
+import { MdVerified } from "react-icons/md";
 
 interface User {
   id: string;
@@ -35,6 +36,7 @@ interface User {
   image?: string;
   email: string;
   createdAt: string;
+  isVerified: boolean;
   Post: { id: string; content: string; createdAt: string }[];
 }
 
@@ -104,7 +106,9 @@ export default function PublicProfile() {
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
               <div className="flex flex-col truncate">
-                <p className="font-bold text-lg truncate">{user.name}</p>
+                <p className="font-bold flex items-center gap-1 text-lg truncate">{user.name}
+                  {user.isVerified && <MdVerified size={16} fill="#1D9BF0" />}
+                </p>
                 <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{user.name?.toLowerCase().replace(/\s+/g, "")}
                 </p>
                 <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
@@ -139,7 +143,9 @@ export default function PublicProfile() {
                     <div className="flex items-center justify-between">
                       <div className="flex sm:flex-row flex-col items-start gap-2 text-sm truncate">
                         <div className="flex flex-col justify-between truncate">
-                          <p className="font-bold truncate">{user.name}</p>
+                          <p className="font-bold flex items-center gap-1 truncate">{user.name}
+                            {user.isVerified && <MdVerified size={13} fill="#1D9BF0" className="mt-[2px]" />}
+                          </p>
                           <p className="text-sm truncate text-neutral-500 -mt-1">@{user.name.toLowerCase().replace(/\s+/g, "")}
                           </p>
                         </div>

@@ -2,12 +2,14 @@
 import Image from "next/image";
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { MdVerified } from "react-icons/md";
 
 const suggestedUsers = [
   {
     id: "1",
     name: "Aman Shakya",
     username: "amanshakya",
+    isVerified: true,
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocIZsRJfYmQRm1mw6mG8tGz_tlpf7eub8LcZOy0jHFyzFCLeIQ=s96-c",
     link: "/profile/a7a7f012-d874-4c55-89e2-ec2468dfb19a"
   },
@@ -15,6 +17,7 @@ const suggestedUsers = [
     id: "2",
     name: "Arun Prajapati",
     username: "arunprajapati",
+    isVerified: false,
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocIxLPfRvt2dcUdK7xfJA5xW7Mw3bx3c7tZV3HnHV7dC8s961Djb=s96-c",
     link: "/profile/8cff3558-5103-4a25-8810-911a26226ca8"
   },
@@ -22,6 +25,7 @@ const suggestedUsers = [
     id: "3",
     name: "John Snow",
     username: "johnsnow",
+    isVerified: false,
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocIfXkcoq6wz2K80bXoy9Zj3dpjp_G9ap48GEtZPVY-pxo2SYA=s96-c",
     link: "/profile/8bc4ac17-0976-48f5-9250-fe4dfdc680a8"
   },
@@ -52,8 +56,9 @@ export function SuggestedUsers() {
                   />
                 </Link>
                 <div className="flex items-start flex-col">
-                  <Link href={user.link} target="_blank" className="text-[0.95rem] font-semibold hover:underline">
+                  <Link href={user.link} target="_blank" className="text-[0.95rem] flex items-center gap-1 font-semibold hover:underline">
                     {user.name}
+                    {user.isVerified && <MdVerified size={14} fill="#1D9BF0" />}
                   </Link>
                   <div className="text-sm text-neutral-500 -mt-1">@{user.username}</div>
                 </div>
