@@ -26,6 +26,7 @@ import {
   LinkedinShareButton,
   LinkedinIcon,
 } from 'next-share'
+import Getverified from "@/components/getverified";
 
 interface Post {
   id: string;
@@ -241,9 +242,12 @@ const Myposts = () => {
             /><div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
                 <div className="flex flex-col truncate">
-                  <p className="font-bold flex items-center gap-1 text-lg truncate">{session?.user.name}
-                    {userVerified && <MdVerified size={16} fill="#1D9BF0" />}
-                  </p>
+                  <div className="flex items-center gap-1">
+                    <p className="font-bold text-lg truncate">{session?.user.name}</p>
+                    {userVerified ? (<MdVerified size={16} fill="#1D9BF0" />) : (
+                      <Getverified />
+                    )}
+                  </div>
                   <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                   </p>
                   <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">

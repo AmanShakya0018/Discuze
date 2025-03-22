@@ -51,6 +51,15 @@ model Bookmark {
   @@unique([userId, postId])
 }
 
+model Verificationrequest {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  fullname  String
+  email     String
+  reason    String
+  proof     String?
+}
+
 enum Provider {
   Google
 }
