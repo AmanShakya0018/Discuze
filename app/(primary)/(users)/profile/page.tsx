@@ -68,6 +68,7 @@ const Myposts = () => {
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isBioUpdating, setIsBioUpdating] = useState(false);
+  const [isOccupationUpdating, setIsOccupationUpdating] = useState(false);
   const [formData, setFormData] = useState<EditFormData>({ content: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [charCount, setCharCount] = useState<number>(0);
@@ -75,12 +76,15 @@ const Myposts = () => {
   const [isUnderLimit, setIsUnderLimit] = useState<boolean>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openBioDialog, setOpenBioDialog] = useState<boolean>(false);
+  const [openOccupationDialog, setOpenOccupationDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
   const [userBio, setUserBio] = useState<string | null>(null);
   const [tempBio, setTempBio] = useState(userBio);
+  const [userOccupation, setUserOccupation] = useState<string>("");
+  const [tempOccupation, setTempOccupation] = useState(userOccupation);
   const [userVerified, setUserVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -117,6 +121,7 @@ const Myposts = () => {
         setUserCreatedAt(userDetailsResponse.data.createdAt);
         setUserVerified(userDetailsResponse.data.isVerified);
         setUserBio(userDetailsResponse.data.bio);
+        setUserOccupation(userDetailsResponse.data.occupation);
       } catch (error) {
         setError(`Something went wrong, please try again. ${error}`);
       } finally {
@@ -200,6 +205,29 @@ const Myposts = () => {
     } finally {
       setOpenBioDialog(false);
       setIsBioUpdating(false);
+    }
+  };
+
+
+  const handleOccupationUpdate = async (newOccupation: string) => {
+    if (!session?.user.id) return;
+
+    setIsOccupationUpdating(true);
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/updateoccupation`,
+        { occupation: newOccupation, userId: session.user.id }
+      );
+
+      if (response.status === 200) {
+        setUserOccupation(newOccupation);
+      }
+    } catch (error) {
+      console.error("Error updating occupation:", error);
+    } finally {
+      setOpenOccupationDialog(false);
+      setIsOccupationUpdating(false);
     }
   };
 
@@ -301,6 +329,19 @@ const Myposts = () => {
                       </>
                     )}
                   </div>
+                  {/*  */}
+                  <div className="text-black dark:text-white truncate text-sm flex items-center justify-between gap-1 mt-2 mb-1 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700">
+                    <div className="flex items-center justify-between gap-2 min-w-full">
+                      <p className="text-black dark:text-white truncate text-wrap text-sm max-w-[90%]">
+                        {userOccupation}
+                      </p>
+                      <Pencil
+                        className="h-4 w-4 cursor-pointer hover:text-zinc-500"
+                        onClick={() => setOpenOccupationDialog(true)}
+                      />
+                    </div>
+                  </div>
+                  {/*  */}
                   <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
                     <CalendarDays className="h-4 w-4" />Joined {userCreatedAt ? format(new Date(userCreatedAt), "MMMM dd, yyyy") : "Date not available"}
                   </p>
@@ -598,6 +639,60 @@ const Myposts = () => {
           </DialogFooter2>
         </DialogContent>
       </Dialog>
+      {/*  */}
+      <Dialog open={openOccupationDialog} onOpenChange={setOpenOccupationDialog}>
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
+          <DialogHeader>
+            <DialogTitle>Edit Your Occupation</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="userOccupation" className="text-right">
+                Occupation
+              </Label>
+              <Input
+                id="userOccupation"
+                value={tempOccupation || ""}
+                onChange={(e) => setTempOccupation(e.target.value)}
+                maxLength={29}
+                minLength={1}
+                placeholder="Add your Occupation..."
+                className="col-span-3"
+              />
+            </div>
+          </div>
+
+          <DialogFooter2 className="flex justify-end gap-2">
+            <Button
+              onClick={() => {
+                setTempOccupation(userOccupation);
+                setOpenOccupationDialog(false)
+                setIsOccupationUpdating(false)
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                handleOccupationUpdate(tempOccupation)
+              }}
+              disabled={!tempOccupation || tempOccupation.trim().length < 1}
+            >
+              {isOccupationUpdating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </DialogFooter2>
+        </DialogContent>
+      </Dialog>
+      {/*  */}
     </div>
   );
 };

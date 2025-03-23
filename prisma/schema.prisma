@@ -13,6 +13,7 @@ model User {
   image      String
   email      String     @unique
   bio        String?    @db.VarChar(150)
+  occupation String     @default("Student") @db.VarChar(30)
   isVerified Boolean    @default(false)
   createdAt  DateTime   @default(now())
   provider   Provider

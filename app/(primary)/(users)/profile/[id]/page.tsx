@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { CalendarDays, MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   FacebookShareButton,
@@ -38,6 +38,7 @@ interface User {
   createdAt: string;
   isVerified: boolean;
   bio?: string;
+  occupation: string;
   Post: { id: string; content: string; createdAt: string }[];
 }
 
@@ -116,6 +117,9 @@ export default function PublicProfile() {
                   <p className="text-black dark:text-white text-wrap truncate text-sm flex items-center gap-1 mt-2 mb-1">
                     {user.bio}
                   </p>}
+                <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
+                  <BriefcaseBusiness className="h-4 w-4" />{user.occupation}
+                </p>
                 <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
                   <CalendarDays className="h-4 w-4" />Joined {user.createdAt ? format(new Date(user.createdAt), "MMMM dd, yyyy") : "Date not available"}
                 </p>

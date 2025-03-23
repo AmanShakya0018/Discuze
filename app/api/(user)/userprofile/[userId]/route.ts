@@ -24,6 +24,7 @@ export async function GET(request: NextRequest, { params }: Params) {
         createdAt: true,
         isVerified: true,
         bio:true,
+        occupation:true,
         Post: {
           orderBy: { createdAt: "desc" },
           select: { id: true, content: true, createdAt: true },
