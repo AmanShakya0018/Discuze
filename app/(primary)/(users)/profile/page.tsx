@@ -67,16 +67,20 @@ const Myposts = () => {
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isBioUpdating, setIsBioUpdating] = useState(false);
   const [formData, setFormData] = useState<EditFormData>({ content: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [charCount, setCharCount] = useState<number>(0);
   const [isOverLimit, setIsOverLimit] = useState<boolean>(false);
   const [isUnderLimit, setIsUnderLimit] = useState<boolean>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openBioDialog, setOpenBioDialog] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
   const [commentsLoading, setCommentsLoading] = useState<{ [key: string]: boolean }>({});
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
+  const [userBio, setUserBio] = useState<string | null>(null);
+  const [tempBio, setTempBio] = useState(userBio);
   const [userVerified, setUserVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -112,6 +116,7 @@ const Myposts = () => {
         setPosts(postsWithComments);
         setUserCreatedAt(userDetailsResponse.data.createdAt);
         setUserVerified(userDetailsResponse.data.isVerified);
+        setUserBio(userDetailsResponse.data.bio);
       } catch (error) {
         setError(`Something went wrong, please try again. ${error}`);
       } finally {
@@ -175,6 +180,29 @@ const Myposts = () => {
       setEditingPost(null);
     }
   };
+
+  const handleBioUpdate = async (newBio: string | null) => {
+    if (!session?.user.id) return;
+
+    setIsBioUpdating(true);
+
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/updatebio`,
+        { bio: newBio, userId: session.user.id }
+      );
+
+      if (response.status === 200) {
+        setUserBio(newBio);
+      }
+    } catch (error) {
+      console.error("Error updating bio:", error);
+    } finally {
+      setOpenBioDialog(false);
+      setIsBioUpdating(false);
+    }
+  };
+
 
   const handleShare = (postId: string) => {
     const link = `${process.env.NEXT_PUBLIC_API_URL}/allposts/${postId}`;
@@ -250,6 +278,29 @@ const Myposts = () => {
                   </div>
                   <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                   </p>
+                  <div className="text-black dark:text-white truncate text-sm flex items-center justify-between gap-1 mt-2 mb-1 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700">
+                    {userBio ? (
+                      <div className="flex items-center justify-between gap-2 min-w-full">
+                        <p className="text-black dark:text-white truncate text-wrap text-sm max-w-[90%]">
+                          {userBio}
+                        </p>
+                        <Pencil
+                          className="h-4 w-4 cursor-pointer hover:text-zinc-500"
+                          onClick={() => setOpenBioDialog(true)}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-neutral-500 truncate text-sm">
+                          Add Bio
+                        </p>
+                        <Pencil
+                          className="h-4 w-4 cursor-pointer hover:text-gray-500"
+                          onClick={() => setOpenBioDialog(true)}
+                        />
+                      </>
+                    )}
+                  </div>
                   <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
                     <CalendarDays className="h-4 w-4" />Joined {userCreatedAt ? format(new Date(userCreatedAt), "MMMM dd, yyyy") : "Date not available"}
                   </p>
@@ -493,6 +544,57 @@ const Myposts = () => {
                 {linkCopied ? "Link Copied!" : "Copy Link"}
               </Button>
             </div>
+          </DialogFooter2>
+        </DialogContent>
+      </Dialog>
+      {/* // */}
+      <Dialog open={openBioDialog} onOpenChange={setOpenBioDialog}>
+        <DialogContent className="sm:max-w-[425px] sm:top-1/2 sm:-translate-y-1/2 top-40">
+          <DialogHeader>
+            <DialogTitle>{userBio ? "Edit Your Bio" : "Add a Bio"}</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="userBio" className="text-right">
+                Bio
+              </Label>
+              <Input
+                id="userBio"
+                value={tempBio || ""}
+                onChange={(e) => setTempBio(e.target.value)}
+                maxLength={149}
+                placeholder="Tell something about yourself..."
+                className="col-span-3"
+              />
+            </div>
+          </div>
+
+          <DialogFooter2 className="flex justify-end gap-2">
+            <Button
+              onClick={() => {
+                setTempBio(userBio);
+                setOpenBioDialog(false)
+                setIsBioUpdating(false)
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                handleBioUpdate(tempBio)
+              }}
+            >
+              {isBioUpdating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
           </DialogFooter2>
         </DialogContent>
       </Dialog>

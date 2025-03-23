@@ -12,6 +12,7 @@ model User {
   name       String
   image      String
   email      String     @unique
+  bio        String?    @db.VarChar(150)
   isVerified Boolean    @default(false)
   createdAt  DateTime   @default(now())
   provider   Provider

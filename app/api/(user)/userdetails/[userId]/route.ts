@@ -20,6 +20,7 @@ export async function GET(request: NextRequest, { params }: Params) {
         email: true,
         createdAt: true,
         isVerified: true,
+        bio:true,
       },
     });
 

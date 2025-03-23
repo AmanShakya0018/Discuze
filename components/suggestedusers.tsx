@@ -17,7 +17,7 @@ const suggestedUsers = [
     id: "2",
     name: "Arun Prajapati",
     username: "arunprajapati",
-    isVerified: false,
+    isVerified: true,
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocIxLPfRvt2dcUdK7xfJA5xW7Mw3bx3c7tZV3HnHV7dC8s961Djb=s96-c",
     link: "/profile/8cff3558-5103-4a25-8810-911a26226ca8"
   },

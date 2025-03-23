@@ -37,6 +37,7 @@ interface User {
   email: string;
   createdAt: string;
   isVerified: boolean;
+  bio?: string;
   Post: { id: string; content: string; createdAt: string }[];
 }
 
@@ -111,6 +112,10 @@ export default function PublicProfile() {
                 </p>
                 <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{user.name?.toLowerCase().replace(/\s+/g, "")}
                 </p>
+                {user.bio &&
+                  <p className="text-black dark:text-white text-wrap truncate text-sm flex items-center gap-1 mt-2 mb-1">
+                    {user.bio}
+                  </p>}
                 <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1">
                   <CalendarDays className="h-4 w-4" />Joined {user.createdAt ? format(new Date(user.createdAt), "MMMM dd, yyyy") : "Date not available"}
                 </p>
