@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MdVerified } from "react-icons/md";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast"
 import Commentskeleton from "@/components/commentsskeleton";
 import {
   FacebookShareButton,
@@ -169,6 +170,9 @@ const Myposts = () => {
       );
 
       if (response.status === 200) {
+        toast({
+          description: "Post updated successfully!"
+        })
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.id === editingPost.id
@@ -198,6 +202,9 @@ const Myposts = () => {
       );
 
       if (response.status === 200) {
+        toast({
+          description: "Bio updated successfully!"
+        })
         setUserBio(newBio);
       }
     } catch (error) {
@@ -221,6 +228,9 @@ const Myposts = () => {
       );
 
       if (response.status === 200) {
+        toast({
+          description: "Occupation updated successfully!"
+        })
         setUserOccupation(newOccupation);
       }
     } catch (error) {
@@ -306,6 +316,7 @@ const Myposts = () => {
                   </div>
                   <p className="font-medium text-sm truncate text-neutral-500 -mt-1">@{session?.user.name?.toLowerCase().replace(/\s+/g, "")}
                   </p>
+                  <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1 -mb-1 ml-[2px]">Bio :</p>
                   <div className="text-black dark:text-white truncate text-sm flex items-center justify-between gap-1 mt-2 mb-1 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700">
                     {userBio ? (
                       <div className="flex items-center justify-between gap-2 min-w-full">
@@ -330,6 +341,7 @@ const Myposts = () => {
                     )}
                   </div>
                   {/*  */}
+                  <p className="text-neutral-500 truncate text-sm flex items-center gap-1 mt-1 -mb-1 ml-[2px]">Occupation :</p>
                   <div className="text-black dark:text-white truncate text-sm flex items-center justify-between gap-1 mt-2 mb-1 px-2 py-1 rounded-md border border-zinc-300 dark:border-zinc-700">
                     <div className="flex items-center justify-between gap-2 min-w-full">
                       <p className="text-black dark:text-white truncate text-wrap text-sm max-w-[90%]">
