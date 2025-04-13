@@ -93,7 +93,6 @@ export default function PublicProfile() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-
       <div>
         <div className="flex flex-col gap-3 max-w-fit ml-2 mb-6">
           <Image

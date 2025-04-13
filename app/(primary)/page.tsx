@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 
-import { MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
+import { AlertCircle, MessageSquare, Share2, SquareArrowOutUpRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,7 @@ import {
 } from 'next-share'
 import PostSkeleton, { PostsSkeleton } from "./loading";
 import { MdVerified } from "react-icons/md";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 interface Post {
   id: string;
@@ -185,7 +186,33 @@ const Home = () => {
   };
 
   if (initialloading) return <div className="text-center"><PostSkeleton count={10} /></div>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (error) return (
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <div>
+        <Card className="border border-neutral-200 dark:border-neutral-700 shadow-lg bg-white dark:bg-neutral-900">
+          <CardHeader className="pb-0">
+            <div className="w-full flex justify-center">
+              <div className="rounded-full bg-red-100 dark:bg-red-900 p-3 text-red-500 dark:text-red-400">
+                <AlertCircle size={32} />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="text-center pt-6">
+            <p className="text-neutral-600 dark:text-neutral-300">{error}</p>
+          </CardContent>
+          <CardFooter className="flex justify-center pb-6">
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => window.location.reload()}
+            >
+              Try again
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
+
 
   return (
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogFooter2, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2, CalendarDays } from "lucide-react";
+import { Pencil, Loader2, Trash, Share2, SquareArrowOutUpRight, Trash2, CalendarDays, AlertCircle } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import PostSkeleton from "./loading";
 import { Spinner } from "@/components/ui/spinner";
@@ -28,6 +28,7 @@ import {
   LinkedinIcon,
 } from 'next-share'
 import Getverified from "@/components/getverified";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
 interface Post {
   id: string;
@@ -124,7 +125,8 @@ const Myposts = () => {
         setUserBio(userDetailsResponse.data.bio);
         setUserOccupation(userDetailsResponse.data.occupation);
       } catch (error) {
-        setError(`Something went wrong, please try again. ${error}`);
+        setError(`Something went wrong, please try again.`);
+        console.error("Error fetching posts:", error);
       } finally {
         setLoading(false);
       }
@@ -290,7 +292,32 @@ const Myposts = () => {
 
 
   if (loading) return <div className="text-center"><PostSkeleton count={10} /></div>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (error) return (
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <div>
+        <Card className="border border-neutral-200 dark:border-neutral-700 shadow-lg bg-white dark:bg-neutral-900">
+          <CardHeader className="pb-0">
+            <div className="w-full flex justify-center">
+              <div className="rounded-full bg-red-100 dark:bg-red-900 p-3 text-red-500 dark:text-red-400">
+                <AlertCircle size={32} />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="text-center pt-6">
+            <p className="text-neutral-600 dark:text-neutral-300">{error}</p>
+          </CardContent>
+          <CardFooter className="flex justify-center pb-6">
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => window.location.reload()}
+            >
+              Try again
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
