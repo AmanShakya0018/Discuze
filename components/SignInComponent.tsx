@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Globe, Hash, Loader2, MessageCircle } from 'lucide-react';
 
 export default function SignInPage() {
   const [signinLoading, setSigninLoading] = useState(false);
@@ -33,58 +33,92 @@ export default function SignInPage() {
   return (
     <div className='min-h screen'>
       <div className="flex min-h-screen bg-background">
-        <div className="hidden md:flex md:w-1/2 bg-emerald-500 items-center justify-center p-8">
-          <div className="space-y-6">
-            <h1 className="text-4xl font-bold text-white">Happening now</h1>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
-                <span className="text-xl">Join the conversation</span>
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-emerald-500 to-emerald-600 items-center justify-center p-8 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-xl"></div>
+            <div className="absolute bottom-32 right-16 w-24 h-24 bg-white rounded-full blur-lg"></div>
+            <div className="absolute top-1/2 right-32 w-16 h-16 bg-white rounded-full blur-md"></div>
+          </div>
+
+          <div className="relative z-10 space-y-8 max-w-md">
+            <div className="space-y-3">
+              <h1 className="text-5xl font-bold text-white leading-tight">
+                Happening now
+              </h1>
+              <p className="text-emerald-100 text-lg font-medium">Be part of something bigger</p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="group flex items-center space-x-4 text-white hover:text-emerald-100 transition-colors duration-200">
+                <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors duration-200">
+                  <Hash className="h-6 w-6" />
+                </div>
+                <span className="text-xl font-medium">Join the conversation</span>
               </div>
-              <div className="flex items-center space-x-4 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
-                <span className="text-xl">Share your thoughts</span>
+
+              <div className="group flex items-center space-x-4 text-white hover:text-emerald-100 transition-colors duration-200">
+                <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors duration-200">
+                  <MessageCircle className="h-6 w-6" />
+                </div>
+                <span className="text-xl font-medium">Share your thoughts</span>
               </div>
-              <div className="flex items-center space-x-4 text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
-                <span className="text-xl">Connect globally</span>
+
+              <div className="group flex items-center space-x-4 text-white hover:text-emerald-100 transition-colors duration-200">
+                <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors duration-200">
+                  <Globe className="h-6 w-6" />
+                </div>
+                <span className="text-xl font-medium">Connect globally</span>
               </div>
+            </div>
+
+            <div className="pt-4">
+              <div className="w-16 h-1 bg-white/30 rounded-full"></div>
             </div>
           </div>
         </div>
-        <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-black">
           <div className="w-full max-w-md space-y-8">
-            <div>
-              <Image src="/discuzelogo.png" width={500} height={500} alt="logo" className='h-12 w-12' />
-              <h2 className="mt-6 text-3xl font-bold tracking-tight text-foreground">See what&apos;s happening</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Join Discuze today.</p>
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <Image src="/discuzelogo.png" width={500} height={500} alt="logo" className="h-12 w-12" />
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight bg-[radial-gradient(61.17%_178.53%_at_38.83%_-13.54%,#3B3B3B_0%,#888787_12.61%,#FFFFFF_50%,#888787_80%,#3B3B3B_100%)] bg-clip-text text-transparent">
+                Welcome to Discuze
+              </h2>
+              <p className="mt-3 text-sm text-neutral-400">See what&apos;s happening</p>
             </div>
+
             <div className="space-y-4">
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 rounded-md px-8 w-full"
+                className="relative inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-neutral-800 to-neutral-900 text-white border border-neutral-700 shadow-lg hover:shadow-xl hover:scale-[1.02] hover:from-neutral-700 hover:to-neutral-800 h-12 rounded-xl px-8 w-full overflow-hidden group"
                 onClick={handleCreateAccount}
                 disabled={createAccount}
               >
-                {createAccount ? (
-                  <>
-                    <Loader2 className="animate-spin w-4 h-4" />
-                    Creating Account...
-                  </>
-                ) : (
-                  'Create Account'
-                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-neutral-700 to-neutral-800 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex items-center gap-2">
+                  {createAccount ? (
+                    <>
+                      <Loader2 className="animate-spin w-4 h-4" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    <>Create Account</>
+                  )}
+                </div>
               </button>
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-muted"></span>
+                  <span className="w-full border-t border-neutral-800"></span>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or</span>
+                  <span className="bg-black px-4 text-neutral-500 font-medium">Or continue with</span>
                 </div>
               </div>
+
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-foreground border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 rounded-md px-8 w-full"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:pointer-events-none disabled:opacity-50 text-white border-2 border-neutral-800 bg-neutral-900/50 shadow-sm hover:bg-neutral-800/50 hover:border-neutral-700 hover:shadow-md h-12 rounded-xl px-8 w-full"
                 onClick={handleSignIn}
                 disabled={signinLoading}
               >
@@ -94,12 +128,40 @@ export default function SignInPage() {
                     Signing in...
                   </>
                 ) : (
-                  'Sign in'
+                  <>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Sign in with Google
+                  </>
                 )}
               </button>
             </div>
-            <p className="text-sm text-muted-foreground text-center">
-              By signing up, you agree to the <Link className='underline' href="/termsofservice" target='_blank'>Terms of Service</Link> and <Link className='underline' href="/privacypolicy" target='_blank'>Privacy Policy.</Link>
+
+            <p className="text-sm text-neutral-500 text-center leading-relaxed">
+              By signing up, you agree to our{" "}
+              <Link className="underline hover:text-neutral-300 transition-colors" href="/termsofservice">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link className="underline hover:text-neutral-300 transition-colors" href="/privacypolicy">
+                Privacy Policy
+              </Link>
             </p>
           </div>
         </div>
