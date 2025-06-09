@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MdVerified } from "react-icons/md";
+import { BiLinkExternal } from "react-icons/bi"
 
 const suggestedUsers = [
   {
@@ -41,12 +42,13 @@ export function SuggestedUsers() {
       <CardContent className="px-2">
         <div className="space-y-2">
           {suggestedUsers.map((user) => (
-            <div
+            <Link
+              href={user.link} target="_blank"
               key={user.id}
               className="flex items-center justify-between px-2 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl transition-colors"
             >
               <div className="flex gap-3">
-                <Link href={user.link} target="_blank">
+                <div >
                   <Image
                     width={500}
                     height={500}
@@ -54,23 +56,23 @@ export function SuggestedUsers() {
                     alt={"pfp"}
                     className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                   />
-                </Link>
+                </div>
                 <div className="flex items-start flex-col">
-                  <Link href={user.link} target="_blank" className="text-[0.95rem] flex items-center gap-1 font-semibold hover:underline">
+                  <div className="text-[0.95rem] flex items-center gap-1 font-semibold hover:underline">
                     {user.name}
                     {user.isVerified && <MdVerified size={14} fill="#1D9BF0" />}
-                  </Link>
+                  </div>
                   <div className="text-sm text-neutral-500 -mt-1">@{user.username}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Link href={user.link} target="_blank"
-                  className="rounded-full font-semibold px-3 py-2 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                <div
+                  className="rounded-full font-semibold px-3 py-2 text-zinc-500 dark:text-zinc-400"
                 >
-                  View
-                </Link>
+                  <BiLinkExternal size={14} />
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         <Link href="/search" className="mt-4 block text-neutral-600 dark:text-neutral-400 hover:underline text-sm pl-3">

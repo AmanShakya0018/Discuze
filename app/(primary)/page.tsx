@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
@@ -77,6 +77,7 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [postloading, setPostLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 
   const fetchPosts = async () => {
@@ -167,6 +168,10 @@ const Home = () => {
     if (value.length <= 799) {
       setContent(value);
     }
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
   };
 
 
@@ -184,6 +189,21 @@ const Home = () => {
         console.error("Error copying the link: ", err);
       });
   };
+
+
+  const maxLength = 799
+  const remainingChars = maxLength - content.length
+  const percentage = (content.length / maxLength) * 100
+
+  const getColor = () => {
+    if (remainingChars <= 0) return "text-red-500 stroke-red-500"
+    if (remainingChars <= maxLength * 0.2) return "text-yellow-500 stroke-yellow-500"
+    return "text-green-400 stroke-green-400"
+  }
+
+  const radius = 18
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (percentage / 100) * circumference
 
   if (initialloading) return <div className="text-center"><PostSkeleton count={10} /></div>;
   if (error) return (
@@ -218,9 +238,9 @@ const Home = () => {
     <div className="min-h-fit text-neutral-800 dark:text-neutral-100">
       <div className="max-w-2xl mx-auto mt-8">
         {/*  */}
-        <div className="flex py-4 px-6 bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl mb-6">
+        <div className="flex py-2 px-4  bg-zinc-50 dark:bg-zinc-900/40 border rounded-xl mb-6">
           <div className="flex flex-col flex-grow overflow-hidden">
-            <div className="flex flex-row items-start gap-2">
+            {/* <div className="flex flex-row items-start gap-2">
               <Link href={"/profile"}>
                 <Image
                   width={500}
@@ -231,7 +251,7 @@ const Home = () => {
                 />
               </Link>
               <Link href={"/profile"}>
-                <div className="flex flex-col items-center justify-between max-w-fit">
+                <div className="flex flex-col items justify-between max-w-fit">
                   {session?.user.name ? (
                     <>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
@@ -243,28 +263,68 @@ const Home = () => {
                   ) : (
                     <>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm truncate">
-                        <p className="font-bold truncate">Unknown User</p>
+                        <p className="font-bold truncate">Guest User</p>
                       </div>
-                      <p className="text-sm truncate text-neutral-500 -mt-1">@unknownuser
+                      <p className="text-sm truncate text-neutral-500 -mt-1">@signin_to_post
                       </p>
                     </>
                   )}
                 </div>
               </Link>
-            </div>
+            </div> */}
             <div className="flex flex-col text-[0.85rem] text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap break-words overflow-hidden">
-              <div>
+              <div className="flex flex-row gap-2 mb-2 min-h-14">
+                <Link href={"/profile"}>
+                  <Image
+                    width={500}
+                    height={500}
+                    src={session?.user.image || "/pfp.png"}
+                    alt={session?.user.name || "pfp.png"}
+                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                  />
+                </Link>
                 <textarea
-                  placeholder="What is happening?!"
+                  placeholder="What's happening?"
                   value={content}
                   onChange={handleContentChange}
-                  className="border bg-neutral-100 dark:bg-neutral-950  border-neutral-200 dark:border-neutral-800 rounded-md p-2 mt-2 w-full max-w-full h-24"
+                  ref={textareaRef}
+                  className="resize-none overflow-hidden bg-transparent p-2 w-full max-w-full min-h-12 placeholder-neutral-500 placeholder:text-lg focus:outline-none focus:border-b-2"
                 ></textarea>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-neutral-500 mb-2">
+              <div className="flex items-center justify-end gap-2">
+                {content.length > 0 &&
+                  <div className="relative flex items-center justify-center">
+                    <div className="relative w-7 h-7 flex items-center justify-center">
+                      <svg className="absolute w-7 h-7 -rotate-90" viewBox="0 0 44 44">
+                        <circle
+                          cx="22"
+                          cy="22"
+                          r={radius}
+                          fill="transparent"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          className="text-zinc-300 dark:text-zinc-800"
+                        />
+                        <circle
+                          cx="22"
+                          cy="22"
+                          r={radius}
+                          fill="transparent"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeDasharray={circumference}
+                          strokeDashoffset={strokeDashoffset}
+                          className={`${getColor()} transition-all duration-300`}
+                        />
+                      </svg>
+
+                      <div className="z-10 text-xs font-mono">{remainingChars > 10 ? "" : remainingChars}</div>
+                    </div>
+                  </div>
+                }
+                {/* <span className="text-xs sm:text-sm text-neutral-500 mb-2">
                   {799 - content.length} characters remaining
-                </span>
+                </span> */}
                 <button className="text-sm text-neutral-700 dark:text-neutral-300 hover:text-neutral-500 border px-5 py-2 rounded-lg"
                   onClick={handlePostSubmit}
                   disabled={loading}

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
+import { CiHeart } from 'react-icons/ci'
 
 const Footer = () => {
   const { theme } = useTheme()
@@ -14,7 +15,7 @@ const Footer = () => {
   }
 
   return (
-    <div className="hidden md:block border-t border-neutral-100 dark:border-white/[0.1] px-8 py-20 bg-white dark:bg-black">
+    <div className="hidden md:block border-t border-neutral-100 dark:border-white/[0.1] px-8 py-12 bg-white dark:bg-black">
       <div className="max-w-[80rem] mx-auto text-sm px-4 text-gray-400 flex sm:flex-row flex-col justify-between items-start ">
         <div>
           <div className="mb-2 flex">
@@ -30,10 +31,6 @@ const Footer = () => {
               />
               <span className="text-2xl font-extrabold text-black dark:text-white ">Discuze</span>
             </Link>
-          </div>
-          <div className="mt-2 text-zinc-400">
-            Build by
-            <a className="dark:text-emerald-500 pl-1 font-medium text-neutral-600" target="__blank" href="https://www.amanshakya.in">@AmanShakya</a>
           </div>
           <div className="mt-2 mr-2 max-w-fit">
             <Link href="https://x.com/compose/tweet?text=%F0%9F%93%A2%20Started%20a%20tech%20discussion%20on%20%23Discuze!%20Join%20the%20conversation%20and%20share%20your%20thoughts%20%F0%9F%92%AC%20%40amanshakya0018" target='_blank'>
@@ -83,7 +80,17 @@ const Footer = () => {
             <p className="hover:text-foreground/80 text-foreground/60"><a href='/privacypolicy' target='_blank'>Privacy Policy</a></p>
           </div>
         </div>
-      </div>
+      </div><p className="w-full mt-12 -mb-6 text-center text-sm text-muted-foreground">
+        Made with <CiHeart className="inline-block text-foreground align-middle w-5 h-5 pb-0.5" /> by{' '}
+        <a
+          href="https://amanshakya.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline text-zinc-500"
+        >
+          this guy
+        </a>
+      </p>
     </div>
   )
 }
